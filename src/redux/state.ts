@@ -24,11 +24,19 @@ interface EntityFailed {
   error: ErrorInfo;
 }
 
-export interface BoardData extends EntityPresent {
-  createdAt: Date;
+type Entity<T> = (EntityPresent & T) | EntityPending | EntityDeleted | EntityFailed;
+
+export interface Category {
+  id: string;
+  label: string;
 }
 
-export type Board = BoardData | EntityPending | EntityDeleted | EntityFailed;
+export interface BoardData {
+  createdAt: Date;
+  categories: Category[];
+}
+
+export type Board = Entity<BoardData>;
 
 export interface BoardCreation {
   pending: boolean;
@@ -41,6 +49,22 @@ export interface Boards {
   items: { [id: string]: Board };
 }
 
+export interface Card {
+  id: string;
+  categoryId: string;
+  content: string;
+  createdAt: Date;
+}
+
+export interface BoardCards {
+  [cardId: string]: Card;
+}
+
+export interface Cards {
+  [boardId: string]: BoardCards;
+}
+
 export interface State {
   boards: Boards;
+  cards: Cards;
 }

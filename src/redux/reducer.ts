@@ -1,7 +1,17 @@
 import { Reducer, combineReducers } from 'redux';
 
-import { State, Boards, ErrorInfo } from './state';
-import { CREATE_BOARD, CREATE_BOARD_SUCCESS, CREATE_BOARD_ERROR, BOARD_PENDING, BOARD_UPDATED, BOARD_DELETED } from './types';
+import { State, Boards, ErrorInfo, Cards } from './state';
+import {
+  CREATE_BOARD,
+  CREATE_BOARD_SUCCESS,
+  CREATE_BOARD_ERROR,
+  BOARD_PENDING,
+  BOARD_UPDATED,
+  BOARD_DELETED,
+  CARD_ADDED,
+  CARD_UPDATED,
+  CARD_DELETED,
+} from './types';
 
 function renderError(error: Error): ErrorInfo {
   return { message: error.message };
@@ -22,7 +32,10 @@ const boards: Reducer<Boards> = (state = { items: {} }, action) => {
       return { ...state, items: { ...state.items, [action.payload.id]: { ...action.payload, state: 'pending' } } };
 
     case BOARD_UPDATED:
-      return { ...state, items: { ...state.items, [action.payload.id]: { ...action.payload, state: 'present' } } };
+      return {
+        ...state,
+        items: { ...state.items, [action.payload.id]: { ...action.payload.data, id: action.payload.id, state: 'present' } },
+      };
 
     case BOARD_DELETED:
       return { ...state, items: { ...state.items, [action.payload.id]: { ...action.payload, state: 'deleted' } } };
@@ -32,6 +45,30 @@ const boards: Reducer<Boards> = (state = { items: {} }, action) => {
   }
 };
 
-export const reducer: Reducer<State> = combineReducers({
-  boards,
-});
+const cards: Reducer<Cards> = (state = {}, action) => {
+  switch (action.type) {
+    case CARD_ADDED:
+    case CARD_UPDATED:
+      return {
+        ...state,
+        [action.payload.boardId]: {
+          ...(state[action.payload.boardId] || {}),
+          [action.payload.id]: { ...action.payload.data, id: action.payload.id },
+        },
+      };
+
+    case CARD_DELETED:
+      return {
+        ...state,
+        [action.payload.boardId]: {
+          ...(state[action.payload.boardId] || {}),
+          [action.payload.id]: undefined,
+        },
+      };
+
+    default:
+      return state;
+  }
+};
+
+export const reducer: Reducer<State> = combineReducers({ boards, cards });

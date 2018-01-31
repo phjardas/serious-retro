@@ -8,3 +8,7 @@ export const DISCONNECT_BOARD = 'disconnectBoard';
 export const BOARD_PENDING = 'board.pending';
 export const BOARD_UPDATED = 'board.updated';
 export const BOARD_DELETED = 'board.deleted';
+
+export const CARD_ADDED = 'card.added';
+export const CARD_UPDATED = 'card.updated';
+export const CARD_DELETED = 'card.deleted';
