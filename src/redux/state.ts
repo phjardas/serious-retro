@@ -29,6 +29,7 @@ type Entity<T> = (EntityPresent & T) | EntityPending | EntityDeleted | EntityFai
 export interface Category {
   id: string;
   label: string;
+  color: 'red' | 'orange' | 'yellow' | 'olive' | 'green' | 'teal' | 'blue' | 'violet' | 'purple' | 'pink' | 'brown' | 'grey' | 'black';
 }
 
 export interface BoardData {
@@ -54,6 +55,8 @@ export interface Card {
   categoryId: string;
   content: string;
   createdAt: Date;
+  editedBy?: string;
+  editing?: boolean;
 }
 
 export interface BoardCards {
@@ -64,7 +67,12 @@ export interface Cards {
   [boardId: string]: BoardCards;
 }
 
+export interface User {
+  id: string;
+}
+
 export interface State {
+  user: User | null;
   boards: Boards;
   cards: Cards;
 }

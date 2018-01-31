@@ -1,7 +1,8 @@
 import { Reducer, combineReducers } from 'redux';
 
-import { State, Boards, ErrorInfo, Cards } from './state';
+import { State, Boards, ErrorInfo, Cards, User } from './state';
 import {
+  INIT_USER,
   CREATE_BOARD,
   CREATE_BOARD_SUCCESS,
   CREATE_BOARD_ERROR,
@@ -53,7 +54,10 @@ const cards: Reducer<Cards> = (state = {}, action) => {
         ...state,
         [action.payload.boardId]: {
           ...(state[action.payload.boardId] || {}),
-          [action.payload.id]: { ...action.payload.data, id: action.payload.id },
+          [action.payload.id]: {
+            ...action.payload.data,
+            id: action.payload.id,
+          },
         },
       };
 
@@ -71,4 +75,13 @@ const cards: Reducer<Cards> = (state = {}, action) => {
   }
 };
 
-export const reducer: Reducer<State> = combineReducers({ boards, cards });
+const user: Reducer<User | null> = (state = null, action) => {
+  switch (action.type) {
+    case INIT_USER:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const reducer: Reducer<State> = combineReducers({ boards, cards, user });

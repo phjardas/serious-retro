@@ -1,10 +1,12 @@
 import * as firebase from 'firebase';
+import * as shortid from 'shortid';
 import { eventChannel } from 'redux-saga';
-import { call, fork, take, takeEvery, put } from 'redux-saga/effects';
+import { call, fork, select, take, takeEvery, put } from 'redux-saga/effects';
 import { History } from 'history';
 
-import { BoardData } from './state';
+import { State, BoardData } from './state';
 import {
+  INIT_USER,
   CREATE_BOARD,
   CONNECT_BOARD,
   DISCONNECT_BOARD,
@@ -14,11 +16,27 @@ import {
   CARD_ADDED,
   CARD_UPDATED,
   CARD_DELETED,
+  EDIT_CARD,
+  DELETE_CARD,
+  SAVE_CARD,
+  ABORT_CARD,
 } from './types';
 import { createBoardSuccess, createBoardError } from './actions';
 
 const firestore = firebase.firestore();
 const boardsColl = firestore.collection('boards');
+
+function* initialize() {
+  const localStorageKey = 'serious-retro.userId';
+  let userId = yield call(localStorage.getItem.bind(localStorage), localStorageKey);
+
+  if (!userId) {
+    userId = shortid.generate();
+    yield call(localStorage.setItem.bind(localStorage), localStorageKey, userId);
+  }
+
+  yield put({ type: INIT_USER, payload: { id: userId } });
+}
 
 function* createBoard(action: any) {
   try {
@@ -27,9 +45,9 @@ function* createBoard(action: any) {
     const boardData: BoardData = {
       createdAt: new Date(),
       categories: [
-        { id: 'good', label: 'What went good' },
-        { id: 'bad', label: 'What went bad' },
-        { id: 'actions', label: 'Action items' },
+        { id: 'good', label: 'What went good', color: 'green' },
+        { id: 'bad', label: 'What went bad', color: 'red' },
+        { id: 'actions', label: 'Action items', color: 'blue' },
       ],
     };
 
@@ -117,9 +135,17 @@ function* connectBoard(action: any) {
   const { id } = action.payload;
   const doc = boardsColl.doc(id);
   yield fork(connectFirestoreDoc, doc, { pending: BOARD_PENDING, updated: BOARD_UPDATED, deleted: BOARD_DELETED });
+
+  const userId = yield select<State>(state => state.user && state.user.id);
   yield fork(connectFirestoreCollection, doc.collection('cards'), {
-    added: (payload: CollectionDocumentAdded) => ({ type: CARD_ADDED, payload: { boardId: id, ...payload } }),
-    updated: (payload: CollectionDocumentUpdated) => ({ type: CARD_UPDATED, payload: { boardId: id, ...payload } }),
+    added: (payload: CollectionDocumentAdded) => ({
+      type: CARD_ADDED,
+      payload: { boardId: id, ...payload, data: { ...payload.data, editing: payload.data.editedBy === userId } },
+    }),
+    updated: (payload: CollectionDocumentUpdated) => ({
+      type: CARD_UPDATED,
+      payload: { boardId: id, ...payload, data: { ...payload.data, editing: payload.data.editedBy === userId } },
+    }),
     deleted: (payload: CollectionDocumentDeleted) => ({ type: CARD_DELETED, payload: { boardId: id, ...payload } }),
   });
 }
@@ -129,8 +155,42 @@ function* disconnectBoard(action: any) {
   yield call(console.log.bind(console), 'disconnecting board %s', id);
 }
 
+function* updateCard(boardId: string, cardId: string, values: any) {
+  const doc = boardsColl
+    .doc(boardId)
+    .collection('cards')
+    .doc(cardId);
+  yield call(doc.update.bind(doc), values);
+}
+
+function* editCard(action: any) {
+  const { boardId, cardId } = action.payload;
+  const userId = yield select<State>(state => state.user && state.user.id);
+  yield call(updateCard, boardId, cardId, { editedBy: userId });
+}
+
+function* saveCard(action: any) {
+  const { boardId, cardId, content } = action.payload;
+  yield call(updateCard, boardId, cardId, { content, editedBy: null });
+}
+
+function* abortCard(action: any) {
+  const { boardId, cardId } = action.payload;
+  yield call(updateCard, boardId, cardId, { editedBy: null });
+}
+
+function* deleteCard(action: any) {
+  const { boardId, cardId } = action.payload;
+  yield call(console.log.bind(console), { boardId, cardId });
+}
+
 export function* rootSaga() {
+  yield initialize();
   yield takeEvery(CREATE_BOARD, createBoard);
   yield takeEvery(CONNECT_BOARD, connectBoard);
   yield takeEvery(DISCONNECT_BOARD, disconnectBoard);
+  yield takeEvery(EDIT_CARD, editCard);
+  yield takeEvery(SAVE_CARD, saveCard);
+  yield takeEvery(ABORT_CARD, abortCard);
+  yield takeEvery(DELETE_CARD, deleteCard);
 }

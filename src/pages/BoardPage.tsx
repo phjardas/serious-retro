@@ -3,7 +3,20 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { match as Match } from 'react-router';
 
-import { State, Boards, Board, Cards, BoardCards, connectBoard, disconnectBoard } from '../redux';
+import {
+  State,
+  Boards,
+  Board,
+  Cards,
+  BoardCards,
+  connectBoard,
+  disconnectBoard,
+  editCard,
+  deleteCard,
+  saveCard,
+  abortCard,
+} from '../redux';
+import Layout from '../components/Layout';
 import BoardComp from '../components/Board';
 
 interface Params {
@@ -24,20 +37,40 @@ class BoardPage extends React.Component<Props, {}> {
     const board = boards.items[id] || { state: 'pending' };
     const boardCards = cards[id] || {};
 
-    return (
-      <div>
-        <h2>Board {match.params.id}</h2>
-        {this.renderBoard(board, boardCards)}
-      </div>
-    );
+    return <Layout title={match.params.id}>{this.renderBoard(board, boardCards)}</Layout>;
   }
 
   renderBoard(board: Board, cards: BoardCards) {
+    const { dispatch } = this.props;
+
     switch (board.state) {
       case 'pending':
         return <p>loading&hellip;</p>;
       case 'present':
-        return <BoardComp board={board} cards={cards} />;
+        return (
+          <BoardComp
+            board={board}
+            cards={cards}
+            editCard={cardId =>
+              dispatch(
+                editCard({
+                  boardId: board.id,
+                  cardId,
+                })
+              )
+            }
+            deleteCard={cardId =>
+              dispatch(
+                deleteCard({
+                  boardId: board.id,
+                  cardId,
+                })
+              )
+            }
+            saveCard={(cardId, content) => dispatch(saveCard({ boardId: board.id, cardId, content }))}
+            abortCard={cardId => dispatch(abortCard({ boardId: board.id, cardId }))}
+          />
+        );
       case 'deleted':
         return <p>Not found!</p>;
       default:
