@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './redux';
 import WelcomePage from './pages/WelcomePage';
 import AboutPage from './pages/AboutPage';
+import BoardPage from './pages/BoardPage';
 
 export default () => (
   <Provider store={store}>
@@ -24,6 +25,7 @@ export default () => (
 
         <Route exact path="/" component={WelcomePage} />
         <Route path="/about" component={AboutPage} />
+        <Route path="/boards/:id" component={BoardPage} />
       </div>
     </Router>
   </Provider>
