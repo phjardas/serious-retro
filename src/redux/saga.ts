@@ -20,6 +20,7 @@ import {
   DELETE_CARD,
   SAVE_CARD,
   ABORT_CARD,
+  CREATE_CARD,
 } from './types';
 import { createBoardSuccess, createBoardError } from './actions';
 
@@ -40,10 +41,12 @@ function* initialize() {
 
 function* createBoard(action: any) {
   try {
+    const userId = yield select<State>(state => state.user && state.user.id);
     const history: History = action.payload.history;
 
     const boardData: BoardData = {
       createdAt: new Date(),
+      owner: userId,
       categories: [
         { id: 'good', label: 'What went good', color: 'green' },
         { id: 'bad', label: 'What went bad', color: 'red' },
@@ -137,16 +140,29 @@ function* connectBoard(action: any) {
   yield fork(connectFirestoreDoc, doc, { pending: BOARD_PENDING, updated: BOARD_UPDATED, deleted: BOARD_DELETED });
 
   const userId = yield select<State>(state => state.user && state.user.id);
+  const addedOrModified = (type: string) => (payload: CollectionDocumentAdded | CollectionDocumentUpdated) => {
+    const owner = payload.data.owner === userId;
+    return {
+      type,
+      payload: {
+        boardId: id,
+        ...payload,
+        data: {
+          ...payload.data,
+          mine: owner,
+          editing: payload.data.editedBy && owner,
+        },
+      },
+    };
+  };
+
   yield fork(connectFirestoreCollection, doc.collection('cards'), {
-    added: (payload: CollectionDocumentAdded) => ({
-      type: CARD_ADDED,
-      payload: { boardId: id, ...payload, data: { ...payload.data, editing: payload.data.editedBy === userId } },
+    added: addedOrModified(CARD_ADDED),
+    updated: addedOrModified(CARD_UPDATED),
+    deleted: (payload: CollectionDocumentDeleted) => ({
+      type: CARD_DELETED,
+      payload: { boardId: id, ...payload },
     }),
-    updated: (payload: CollectionDocumentUpdated) => ({
-      type: CARD_UPDATED,
-      payload: { boardId: id, ...payload, data: { ...payload.data, editing: payload.data.editedBy === userId } },
-    }),
-    deleted: (payload: CollectionDocumentDeleted) => ({ type: CARD_DELETED, payload: { boardId: id, ...payload } }),
   });
 }
 
@@ -161,6 +177,13 @@ function* updateCard(boardId: string, cardId: string, values: any) {
     .collection('cards')
     .doc(cardId);
   yield call(doc.update.bind(doc), values);
+}
+
+function* createCard(action: any) {
+  const { boardId, categoryId } = action.payload;
+  const userId = yield select<State>(state => state.user && state.user.id);
+  const coll = boardsColl.doc(boardId).collection('cards');
+  yield call(coll.add.bind(coll), { categoryId, owner: userId, editedBy: userId });
 }
 
 function* editCard(action: any) {
@@ -181,7 +204,11 @@ function* abortCard(action: any) {
 
 function* deleteCard(action: any) {
   const { boardId, cardId } = action.payload;
-  yield call(console.log.bind(console), { boardId, cardId });
+  const doc = boardsColl
+    .doc(boardId)
+    .collection('cards')
+    .doc(cardId);
+  yield call(doc.delete.bind(doc));
 }
 
 export function* rootSaga() {
@@ -189,6 +216,7 @@ export function* rootSaga() {
   yield takeEvery(CREATE_BOARD, createBoard);
   yield takeEvery(CONNECT_BOARD, connectBoard);
   yield takeEvery(DISCONNECT_BOARD, disconnectBoard);
+  yield takeEvery(CREATE_CARD, createCard);
   yield takeEvery(EDIT_CARD, editCard);
   yield takeEvery(SAVE_CARD, saveCard);
   yield takeEvery(ABORT_CARD, abortCard);

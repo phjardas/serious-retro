@@ -34,6 +34,7 @@ export interface Category {
 
 export interface BoardData {
   createdAt: Date;
+  owner: string;
   categories: Category[];
 }
 
@@ -55,8 +56,10 @@ export interface Card {
   categoryId: string;
   content: string;
   createdAt: Date;
+  owner: string;
   editedBy?: string;
   editing?: boolean;
+  mine?: boolean;
 }
 
 export interface BoardCards {

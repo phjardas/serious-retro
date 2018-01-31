@@ -23,10 +23,12 @@ function createContent(props: Props) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
       <div style={{ whiteSpace: 'pre-line', alignSelf: 'flex-start' }}>{card.content}</div>
-      <Button.Group>
-        <Button icon="pencil" onClick={edit} />
-        <Button icon="trash" onClick={props.delete} />
-      </Button.Group>
+      {card.mine && (
+        <Button.Group>
+          <Button icon="pencil" onClick={edit} />
+          <Button icon="trash" onClick={props.delete} />
+        </Button.Group>
+      )}
     </div>
   );
 }

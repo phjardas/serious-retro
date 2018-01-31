@@ -4,7 +4,7 @@ import { Container, Menu } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 export interface Props {
-  title: string;
+  title?: string;
   children: React.ReactNode;
 }
 
@@ -13,7 +13,7 @@ export default (props: Props) => {
   return (
     <div>
       <Helmet>
-        <title>{title} - Serious Retrospective</title>
+        <title>{title ? `${title} - ` : ''}Serious Retrospective</title>
       </Helmet>
       <Menu fixed="top" inverted>
         <Container fluid>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Header, Segment } from 'semantic-ui-react';
+import { Button, Header, Segment } from 'semantic-ui-react';
 
 import { Category, Card } from '../redux';
 import CardComp from './Card';
@@ -7,6 +7,7 @@ import CardComp from './Card';
 export interface Props {
   category: Category;
   cards: Card[];
+  createCard(): void;
   editCard(cardId: string): void;
   deleteCard(cardId: string): void;
   saveCard(cardId: string, content: string): void;
@@ -14,12 +15,15 @@ export interface Props {
 }
 
 export default (props: Props) => {
-  const { category, cards } = props;
+  const { category, cards, createCard } = props;
 
   return (
     <React.Fragment>
       <Header attached="top" inverted>
-        {category.label}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {category.label}
+          <Button icon="add" onClick={createCard} />
+        </div>
       </Header>
       <Segment attached color={category.color}>
         {cards.map(card => (
@@ -33,6 +37,7 @@ export default (props: Props) => {
             cancel={() => props.abortCard(card.id)}
           />
         ))}
+        <Button content="Add new card" icon="add" color={category.color} onClick={createCard} />
       </Segment>
     </React.Fragment>
   );

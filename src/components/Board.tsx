@@ -1,20 +1,25 @@
 import * as React from 'react';
-import { Container, Grid, SemanticWIDTHSNUMBER } from 'semantic-ui-react';
+import { Container, Grid, Loader, SemanticWIDTHSNUMBER } from 'semantic-ui-react';
 
-import { BoardData, BoardCards, Card } from '../redux';
+import { Board, BoardData, BoardCards, Card } from '../redux';
 import Category from './Category';
 
 export interface Props {
-  board: BoardData;
+  board: Board;
   cards: BoardCards;
+  createCard(categoryId: string): void;
   editCard(cardId: string): void;
   deleteCard(cardId: string): void;
   saveCard(cardId: string, content: string): void;
   abortCard(cardId: string): void;
 }
 
-export default (props: Props) => {
-  const { board, cards, editCard, deleteCard, saveCard, abortCard } = props;
+function renderPending() {
+  return <Loader active content="Loading retrospective…" />;
+}
+
+function renderPresent(board: BoardData, props: Props) {
+  const { cards, createCard, editCard, deleteCard, saveCard, abortCard } = props;
 
   const categoryCards: (categoryId: string) => Card[] = categoryId =>
     Object.keys(cards)
@@ -31,6 +36,7 @@ export default (props: Props) => {
             <Category
               category={category}
               cards={categoryCards(category.id)}
+              createCard={() => createCard(category.id)}
               editCard={editCard}
               deleteCard={deleteCard}
               saveCard={saveCard}
@@ -41,4 +47,18 @@ export default (props: Props) => {
       </Grid>
     </Container>
   );
+}
+
+export default (props: Props) => {
+  const { board } = props;
+  switch (board.state) {
+    case 'pending':
+      return renderPending();
+    case 'present':
+      return renderPresent(board, props);
+    case 'deleted':
+      return <p>Not found!</p>;
+    default:
+      return <p>ooops</p>;
+  }
 };

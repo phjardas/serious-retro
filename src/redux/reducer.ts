@@ -18,6 +18,11 @@ function renderError(error: Error): ErrorInfo {
   return { message: error.message };
 }
 
+function deleteProperty(values: any, key: string): any {
+  const { [key]: _, ...newValue } = values;
+  return newValue;
+}
+
 const boards: Reducer<Boards> = (state = { items: {} }, action) => {
   switch (action.type) {
     case CREATE_BOARD:
@@ -64,10 +69,7 @@ const cards: Reducer<Cards> = (state = {}, action) => {
     case CARD_DELETED:
       return {
         ...state,
-        [action.payload.boardId]: {
-          ...(state[action.payload.boardId] || {}),
-          [action.payload.id]: undefined,
-        },
+        [action.payload.boardId]: deleteProperty(state[action.payload.boardId] || {}, action.payload.id),
       };
 
     default:
