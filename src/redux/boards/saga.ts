@@ -100,7 +100,7 @@ function* disconnectBoard(action: any) {
 
 function* loadMyBoards() {
   const userId: string = yield select((state: any) => state.user && state.user.id);
-  const query = boardsColl.where(`participants.${userId}`, '==', 'owner');
+  const query = boardsColl.where(`participants.${userId}`, '>', '');
   const modified = (payload: CollectionDocumentAdded | CollectionDocumentUpdated) => ({
     type: MY_BOARD_UPDATE,
     payload: {
