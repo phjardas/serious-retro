@@ -26,12 +26,15 @@ function renderPresent(board: BoardData, props: Props) {
       .map(id => cards[id])
       .filter(card => card.categoryId === categoryId);
 
-  const columns = Math.min(board.categories.length, 16) as SemanticWIDTHSNUMBER;
+  const categories = Object.keys(board.categories)
+    .map(id => board.categories[id])
+    .sort((a, b) => a.order - b.order);
+  const columns = Math.min(categories.length, 16) as SemanticWIDTHSNUMBER;
 
   return (
     <Container fluid>
       <Grid columns={columns} padded>
-        {board.categories.map(category => (
+        {categories.map(category => (
           <Grid.Column key={category.id}>
             <Category
               category={category}

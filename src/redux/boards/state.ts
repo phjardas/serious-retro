@@ -5,13 +5,14 @@ export type ParticipationType = 'owner' | 'participant';
 export interface Category {
   id: string;
   label: string;
+  order: number;
   color: 'red' | 'orange' | 'yellow' | 'olive' | 'green' | 'teal' | 'blue' | 'violet' | 'purple' | 'pink' | 'brown' | 'grey' | 'black';
 }
 
 export interface BoardData {
   createdAt: Date;
   label?: string;
-  categories: Category[];
+  categories: { [id: string]: Category };
   participants: { [userId: string]: ParticipationType };
   role: ParticipationType;
 }
