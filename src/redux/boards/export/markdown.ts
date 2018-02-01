@@ -5,14 +5,14 @@ import { BoardCards } from '../../cards';
 export const markdown: Exporter = async (board: BoardData, cards: BoardCards) => {
   let s = '';
   if (board.label) {
-    s += `# ${board.label}\n\n`;
+    s += `${board.label}\n${'='.repeat(board.label.length)}\n\n`;
   }
 
   Object.keys(board.categories)
     .map(id => board.categories[id])
     .sort((a, b) => a.order - b.order)
     .forEach(category => {
-      s += `## ${category.label}\n\n`;
+      s += `${category.label}\n${'-'.repeat(category.label.length)}\n\n`;
       Object.keys(cards)
         .map(id => cards[id])
         .filter(card => card.categoryId === category.id)

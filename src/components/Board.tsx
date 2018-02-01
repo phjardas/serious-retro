@@ -64,7 +64,8 @@ function renderPresent(board: BoardData, props: Props, settingsShown: boolean, s
         {board.role === 'owner' && <Menu.Item content="Settings" icon="setting" onClick={() => showSettings(true)} />}
         <Dropdown item text="Export as&hellip;">
           <Dropdown.Menu>
-            <Dropdown.Item text="Markdown" icon="file text" onClick={() => exportBoard('markdown')} />
+            <Dropdown.Item text="HTML" onClick={() => exportBoard('html')} />
+            <Dropdown.Item text="Markdown" onClick={() => exportBoard('markdown')} />
           </Dropdown.Menu>
         </Dropdown>
       </Menu>
