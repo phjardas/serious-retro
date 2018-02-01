@@ -13,7 +13,7 @@ interface Props {
 class MyBoards extends React.Component<Props, {}> {
   render() {
     const { boards } = this.props;
-    const myBoards = Object.keys(boards.owned).map(id => boards.items[id]);
+    const myBoards = Object.keys(boards.mine).map(id => boards.items[id]);
     if (!myBoards.length) {
       return null;
     }
@@ -24,10 +24,17 @@ class MyBoards extends React.Component<Props, {}> {
         <ul>
           {myBoards.map(board => (
             <li key={board.id}>
-              <Link to={`/boards/${board.id}`}>{board.id}</Link>
+              {board.state === 'present' ? (
+                <Link to={`/boards/${board.id}`}>
+                  {board.label || board.id} ({board.role})
+                </Link>
+              ) : (
+                <span>loading&hellip;</span>
+              )}
             </li>
           ))}
         </ul>
+        <pre>{JSON.stringify(myBoards, null, 2)}</pre>
       </div>
     );
   }

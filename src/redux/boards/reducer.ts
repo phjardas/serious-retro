@@ -13,7 +13,7 @@ import {
 } from './types';
 import { renderError, deleteProperty } from '../common/reducer';
 
-export const reducer: Reducer<Boards> = (state = { items: {}, owned: {} }, action) => {
+export const reducer: Reducer<Boards> = (state = { items: {}, mine: {} }, action) => {
   switch (action.type) {
     case CREATE_BOARD:
       return {
@@ -59,16 +59,20 @@ export const reducer: Reducer<Boards> = (state = { items: {}, owned: {} }, actio
         ...state,
         items: {
           ...state.items,
-          [action.payload.id]: { ...action.payload.data, id: action.payload.id, state: 'present' },
+          [action.payload.id]: {
+            ...action.payload.data,
+            id: action.payload.id,
+            state: 'present',
+          },
         },
-        owned: { ...state.owned, [action.payload.id]: true },
+        mine: { ...state.mine, [action.payload.id]: true },
       };
 
     case MY_BOARD_DELETE:
       return {
         ...state,
         items: { ...state.items, [action.payload.id]: { ...action.payload, state: 'deleted' } },
-        owned: deleteProperty(state.owned, action.payload.id),
+        mine: deleteProperty(state.mine, action.payload.id),
       };
 
     default:

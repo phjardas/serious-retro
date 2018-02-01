@@ -12,6 +12,7 @@ import {
   BOARD_DELETED,
   LOAD_MY_BOARDS,
   MY_BOARD_UPDATE,
+  MY_BOARD_DELETE,
 } from './types';
 import { createBoardSuccess, createBoardError } from './actions';
 import {
@@ -33,12 +34,13 @@ function* createBoard(action: any) {
 
     const boardData: BoardData = {
       createdAt: new Date(),
-      owner: userId,
       categories: [
         { id: 'good', label: 'What went good', color: 'green' },
         { id: 'bad', label: 'What went bad', color: 'red' },
         { id: 'actions', label: 'Action items', color: 'blue' },
       ],
+      participants: { [userId]: 'owner' },
+      role: 'owner',
     };
 
     const ref = yield call(boardsColl.add.bind(boardsColl), boardData);
@@ -51,8 +53,30 @@ function* createBoard(action: any) {
 
 function* connectBoard(action: any) {
   const { id } = action.payload;
+  const userId: string = yield select((state: any) => state.user && state.user.id);
   const doc = boardsColl.doc(id);
-  yield fork(connectFirestoreDoc, doc, { pending: BOARD_PENDING, updated: BOARD_UPDATED, deleted: BOARD_DELETED });
+
+  yield fork(connectFirestoreDoc, doc, {
+    pending() {
+      return { type: BOARD_PENDING };
+    },
+    updated(payload: CollectionDocumentUpdated) {
+      return {
+        type: BOARD_UPDATED,
+        payload: {
+          ...payload,
+          data: {
+            ...payload.data,
+            role: payload.data.participants[userId],
+          },
+        },
+      };
+    },
+    deleted(payload: CollectionDocumentDeleted) {
+      return { type: BOARD_DELETED, payload };
+    },
+  });
+
   yield put(synchronizeCards({ boardId: id }));
 }
 
@@ -64,11 +88,22 @@ function* disconnectBoard(action: any) {
 
 function* loadMyBoards() {
   const userId: string = yield select((state: any) => state.user && state.user.id);
-  const query = boardsColl.where('owner', '==', userId);
+  const query = boardsColl.where(`participants.${userId}`, '==', 'owner');
+  const modified = (payload: CollectionDocumentAdded | CollectionDocumentUpdated) => ({
+    type: MY_BOARD_UPDATE,
+    payload: {
+      ...payload,
+      data: {
+        ...payload.data,
+        role: payload.data.participants[userId],
+      },
+    },
+  });
+
   yield connectFirestoreCollection(query, {
-    added: (payload: CollectionDocumentAdded) => ({ type: MY_BOARD_UPDATE, payload }),
-    updated: (payload: CollectionDocumentUpdated) => ({ type: MY_BOARD_UPDATE, payload }),
-    deleted: (payload: CollectionDocumentDeleted) => ({ type: MY_BOARD_UPDATE, payload }),
+    added: modified,
+    updated: modified,
+    deleted: (payload: CollectionDocumentDeleted) => ({ type: MY_BOARD_DELETE, payload }),
   });
 }
 

@@ -1,5 +1,7 @@
 import { Entity, ErrorInfo } from '../common/state';
 
+export type ParticipationType = 'owner' | 'participant';
+
 export interface Category {
   id: string;
   label: string;
@@ -8,8 +10,10 @@ export interface Category {
 
 export interface BoardData {
   createdAt: Date;
-  owner: string;
+  label?: string;
   categories: Category[];
+  participants: { [userId: string]: ParticipationType };
+  role: ParticipationType;
 }
 
 export type Board = Entity<BoardData>;
@@ -23,5 +27,5 @@ export interface BoardCreation {
 export interface Boards {
   creation?: BoardCreation;
   items: { [id: string]: Board };
-  owned: { [id: string]: true };
+  mine: { [id: string]: ParticipationType };
 }

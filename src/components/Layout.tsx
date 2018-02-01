@@ -18,7 +18,7 @@ export default (props: Props) => {
       <Menu fixed="top" inverted>
         <Container fluid>
           <Menu.Item as={Link} to="/">
-            Serious Retrospective
+            {title || 'Serious Retrospective'}
           </Menu.Item>
         </Container>
       </Menu>

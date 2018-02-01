@@ -2,18 +2,26 @@ import * as firebase from 'firebase';
 import { eventChannel } from 'redux-saga';
 import { take, put } from 'redux-saga/effects';
 
+export type CollectionDocumentAdded = { id: string; data: any };
+export type CollectionDocumentUpdated = { id: string; data: any };
+export type CollectionDocumentDeleted = { id: string };
+
 export function* connectFirestoreDoc(
   ref: firebase.firestore.DocumentReference,
-  actions: { pending: string; updated: string; deleted: string }
+  actions: {
+    pending(): any;
+    updated(payload: CollectionDocumentUpdated): any;
+    deleted(payload: CollectionDocumentDeleted): any;
+  }
 ) {
-  yield put({ type: actions.pending, payload: { id: ref.id } });
+  yield put(actions.pending());
 
   const channel = yield eventChannel(emit => {
     return ref.onSnapshot(snapshot => {
       if (snapshot.exists) {
-        emit({ type: actions.updated, payload: { id: snapshot.id, data: snapshot.data() } });
+        emit(actions.updated({ id: snapshot.id, data: snapshot.data() }));
       } else {
-        emit({ type: actions.deleted, payload: { id: snapshot.id } });
+        emit(actions.deleted({ id: snapshot.id }));
       }
     });
   });
@@ -29,10 +37,6 @@ export function* connectFirestoreDoc(
     console.log('done.');
   }
 }
-
-export type CollectionDocumentAdded = { id: string; data: any };
-export type CollectionDocumentUpdated = { id: string; data: any };
-export type CollectionDocumentDeleted = { id: string };
 
 export function* connectFirestoreCollection(
   ref: firebase.firestore.Query,

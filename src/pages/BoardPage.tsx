@@ -26,7 +26,7 @@ class BoardPage extends React.Component<Props, {}> {
     const boardCards = cards[id] || {};
 
     return (
-      <Layout>
+      <Layout title={board.state === 'present' ? board.label : undefined}>
         <BoardComp
           board={board}
           cards={boardCards}
