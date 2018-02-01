@@ -41,9 +41,11 @@ function* createBoard(action: any) {
     const boardData: BoardData = {
       createdAt: new Date(),
       categories: [
-        { id: 'good', label: 'What went good', order: 0, color: 'green' },
-        { id: 'bad', label: 'What went bad', order: 1, color: 'red' },
-        { id: 'actions', label: 'Action items', order: 2, color: 'blue' },
+        { id: 'good', label: 'What went well?', order: 0, color: 'green' },
+        { id: 'bad', label: 'What went not so well?', order: 1, color: 'red' },
+        { id: 'learned', label: 'What have I learned?', order: 2, color: 'brown' },
+        { id: 'puzzle', label: 'What still puzzles me?', order: 3, color: 'orange' },
+        { id: 'actions', label: 'Action items', order: 4, color: 'blue' },
       ].reduce((a, b) => ({ ...a, [b.id]: b }), {}),
       participants: { [userId]: 'owner' },
       role: 'owner',

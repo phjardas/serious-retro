@@ -41,6 +41,7 @@ function renderPresent(board: BoardData, props: Props, settingsShown: boolean, s
     .map(id => board.categories[id])
     .sort((a, b) => a.order - b.order);
   const columns = Math.min(categories.length, 16) as SemanticWIDTHSNUMBER;
+  console.log('columns:', columns);
 
   return (
     <Container fluid>
@@ -70,9 +71,9 @@ function renderPresent(board: BoardData, props: Props, settingsShown: boolean, s
         </Dropdown>
       </Menu>
 
-      <Grid columns={columns} padded stackable>
+      <Grid padded>
         {categories.map(category => (
-          <Grid.Column key={category.id}>
+          <Grid.Column key={category.id} mobile={16} tablet={8} computer={4}>
             <Category
               category={category}
               cards={categoryCards(category.id)}

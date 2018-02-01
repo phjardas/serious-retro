@@ -27,7 +27,7 @@ class Layout extends React.Component<Props, {}> {
         <Menu fixed="top" inverted>
           <Container fluid>
             <Menu.Item as={Link} to="/">
-              {title || 'Serious Retrospective'}
+              {title ? title : 'Serious Retrospective'}
             </Menu.Item>
             {myBoards.length > 0 && (
               <Dropdown item text="Retrospectives">

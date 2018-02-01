@@ -39,9 +39,10 @@ class BoardPage extends React.Component<Props, {}> {
     const { id } = match.params;
     const board = boards.items[id] || { state: 'pending' };
     const boardCards = cards[id] || {};
+    const title = board.state === 'present' && board.label ? `${board.label} - a Serious Retrospective` : undefined;
 
     return (
-      <Layout title={board.state === 'present' ? `${board.label} - a Serious Retrospective` : undefined}>
+      <Layout title={title}>
         <BoardComp
           board={board}
           cards={boardCards}
