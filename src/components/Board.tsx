@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Container, Grid, Loader, Message, SemanticWIDTHSNUMBER } from 'semantic-ui-react';
 
-import { Board, BoardData, BoardCards, Card } from '../redux';
+import { Board, BoardData, BoardCards, Card, BoardSettings as Settings } from '../redux';
+import BoardSettings from './BoardSettings';
 import Category from './Category';
 
 export interface Props {
@@ -12,6 +13,7 @@ export interface Props {
   deleteCard(cardId: string): void;
   saveCard(cardId: string, content: string): void;
   abortCard(cardId: string): void;
+  updateSettings(settings: Settings): void;
 }
 
 function renderPending() {
@@ -27,7 +29,7 @@ function renderNotFound() {
 }
 
 function renderPresent(board: BoardData, props: Props) {
-  const { cards, createCard, editCard, deleteCard, saveCard, abortCard } = props;
+  const { cards, createCard, editCard, deleteCard, saveCard, abortCard, updateSettings } = props;
 
   const categoryCards: (categoryId: string) => Card[] = categoryId =>
     Object.keys(cards)
@@ -41,20 +43,29 @@ function renderPresent(board: BoardData, props: Props) {
 
   return (
     <Container fluid>
-      <Grid columns={columns} padded>
-        {categories.map(category => (
-          <Grid.Column key={category.id}>
-            <Category
-              category={category}
-              cards={categoryCards(category.id)}
-              createCard={() => createCard(category.id)}
-              editCard={editCard}
-              deleteCard={deleteCard}
-              saveCard={saveCard}
-              abortCard={abortCard}
-            />
-          </Grid.Column>
-        ))}
+      <Grid padded>
+        {board.role === 'owner' && (
+          <Grid.Row>
+            <Grid.Column>
+              <BoardSettings board={board} save={updateSettings} />
+            </Grid.Column>
+          </Grid.Row>
+        )}
+        <Grid.Row columns={columns}>
+          {categories.map(category => (
+            <Grid.Column key={category.id}>
+              <Category
+                category={category}
+                cards={categoryCards(category.id)}
+                createCard={() => createCard(category.id)}
+                editCard={editCard}
+                deleteCard={deleteCard}
+                saveCard={saveCard}
+                abortCard={abortCard}
+              />
+            </Grid.Column>
+          ))}
+        </Grid.Row>
       </Grid>
     </Container>
   );

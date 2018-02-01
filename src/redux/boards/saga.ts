@@ -14,6 +14,9 @@ import {
   MY_BOARD_UPDATE,
   MY_BOARD_DELETE,
   VISIT_BOARD,
+  UPDATE_BOARD_SETTINGS,
+  UPDATE_BOARD_SETTINGS_SUCCESS,
+  UPDATE_BOARD_SETTINGS_ERROR,
 } from './types';
 import { createBoardSuccess, createBoardError } from './actions';
 import {
@@ -24,6 +27,7 @@ import {
   CollectionDocumentDeleted,
 } from '../common/saga';
 import { synchronizeCards } from '../cards/actions';
+import { BoardSettings } from 'home/phjardas/workspace/serious-retro/src/redux';
 
 const firestore = firebase.firestore();
 const boardsColl = firestore.collection('boards');
@@ -122,10 +126,23 @@ function* loadMyBoards() {
   });
 }
 
+function* updateSettings(action: any) {
+  const { boardId, settings }: { boardId: string; settings: BoardSettings } = action.payload;
+
+  try {
+    const doc = boardsColl.doc(boardId);
+    yield call(doc.update.bind(doc), settings);
+    yield put({ type: UPDATE_BOARD_SETTINGS_SUCCESS, payload: { boardId } });
+  } catch (error) {
+    yield put({ type: UPDATE_BOARD_SETTINGS_ERROR, payload: { boardId }, error });
+  }
+}
+
 export function* saga() {
   yield takeEvery(CREATE_BOARD, createBoard);
   yield takeEvery(CONNECT_BOARD, connectBoard);
   yield takeEvery(DISCONNECT_BOARD, disconnectBoard);
   yield takeEvery(VISIT_BOARD, visitBoard);
   yield takeEvery(LOAD_MY_BOARDS, loadMyBoards);
+  yield takeEvery(UPDATE_BOARD_SETTINGS, updateSettings);
 }

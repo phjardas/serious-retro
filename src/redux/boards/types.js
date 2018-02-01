@@ -13,3 +13,7 @@ export const VISIT_BOARD = 'visitBoard';
 export const BOARD_PENDING = 'board.pending';
 export const BOARD_UPDATED = 'board.updated';
 export const BOARD_DELETED = 'board.deleted';
+
+export const UPDATE_BOARD_SETTINGS = 'updateBoardSettings';
+export const UPDATE_BOARD_SETTINGS_SUCCESS = 'updateBoardSettings.success';
+export const UPDATE_BOARD_SETTINGS_ERROR = 'updateBoardSettings.error';

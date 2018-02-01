@@ -8,6 +8,7 @@ import {
   DISCONNECT_BOARD,
   LOAD_MY_BOARDS,
   VISIT_BOARD,
+  UPDATE_BOARD_SETTINGS,
 } from './types';
 
 export const createBoard = createAction(CREATE_BOARD, (history: History) => ({ history }));
@@ -17,3 +18,12 @@ export const connectBoard = createAction(CONNECT_BOARD, (id: string) => ({ id })
 export const disconnectBoard = createAction(DISCONNECT_BOARD, (id: string) => ({ id }));
 export const loadMyBoards = createAction(LOAD_MY_BOARDS);
 export const visitBoard = createAction(VISIT_BOARD, (id: string) => ({ id }));
+
+export interface BoardSettings {
+  label: string;
+}
+
+export const updateBoardSettings = createAction(UPDATE_BOARD_SETTINGS, (boardId: string, settings: BoardSettings) => ({
+  boardId,
+  settings,
+}));
