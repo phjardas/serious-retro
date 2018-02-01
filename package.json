@@ -23,7 +23,8 @@
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "precommit": "lint-staged",
-    "firebase": "firebase"
+    "firebase": "firebase",
+    "fixme": "fixme *.ts"
   },
   "devDependencies": {
     "@types/jest": "^22.1.1",
@@ -37,6 +38,7 @@
     "@types/redux-actions": "^2.2.3",
     "@types/shortid": "0.0.29",
     "firebase-tools": "^3.17.4",
+    "fixme": "^0.4.4",
     "husky": "^0.14.3",
     "lint-staged": "^6.1.0",
     "prettier": "^1.10.2",
