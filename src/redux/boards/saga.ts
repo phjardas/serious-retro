@@ -13,6 +13,7 @@ import {
   LOAD_MY_BOARDS,
   MY_BOARD_UPDATE,
   MY_BOARD_DELETE,
+  VISIT_BOARD,
 } from './types';
 import { createBoardSuccess, createBoardError } from './actions';
 import {
@@ -49,6 +50,17 @@ function* createBoard(action: any) {
   } catch (error) {
     yield put(createBoardError(error));
   }
+}
+
+function* visitBoard(action: any) {
+  const { id } = action.payload;
+  const userId: string = yield select((state: any) => state.user && state.user.id);
+  const doc = boardsColl.doc(id);
+  firestore.runTransaction(async tx => {
+    const d = await tx.get(doc);
+    const role = d.data().participants[userId] || 'participant';
+    tx.update(doc, { [`participants.${userId}`]: role });
+  });
 }
 
 function* connectBoard(action: any) {
@@ -111,5 +123,6 @@ export function* saga() {
   yield takeEvery(CREATE_BOARD, createBoard);
   yield takeEvery(CONNECT_BOARD, connectBoard);
   yield takeEvery(DISCONNECT_BOARD, disconnectBoard);
+  yield takeEvery(VISIT_BOARD, visitBoard);
   yield takeEvery(LOAD_MY_BOARDS, loadMyBoards);
 }

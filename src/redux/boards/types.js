@@ -8,6 +8,7 @@ export const MY_BOARD_DELETE = 'myBoard.delete';
 
 export const CONNECT_BOARD = 'connectBoard';
 export const DISCONNECT_BOARD = 'disconnectBoard';
+export const VISIT_BOARD = 'visitBoard';
 
 export const BOARD_PENDING = 'board.pending';
 export const BOARD_UPDATED = 'board.updated';

@@ -3,7 +3,19 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { match as Match } from 'react-router';
 
-import { State, Boards, Cards, connectBoard, disconnectBoard, createCard, editCard, deleteCard, saveCard, abortCard } from '../redux';
+import {
+  State,
+  Boards,
+  Cards,
+  visitBoard,
+  connectBoard,
+  disconnectBoard,
+  createCard,
+  editCard,
+  deleteCard,
+  saveCard,
+  abortCard,
+} from '../redux';
 import Layout from '../components/Layout';
 import BoardComp from '../components/Board';
 
@@ -55,6 +67,7 @@ class BoardPage extends React.Component<Props, {}> {
   }
 
   componentWillMount() {
+    this.props.dispatch(visitBoard(this.props.match.params.id));
     this.props.dispatch(connectBoard(this.props.match.params.id));
   }
 
