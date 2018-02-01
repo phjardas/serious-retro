@@ -1,47 +1,42 @@
 import * as React from 'react';
-import { connect, Dispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Header } from 'semantic-ui-react';
+import { Header, List } from 'semantic-ui-react';
 
-import { loadMyBoards, State, Boards } from '../redux';
+import { Board } from '../redux';
 
 interface Props {
-  boards: Boards;
-  dispatch: Dispatch<{}>;
+  boards: Board[];
 }
 
-class MyBoards extends React.Component<Props, {}> {
-  render() {
-    const { boards } = this.props;
-    const myBoards = Object.keys(boards.mine).map(id => boards.items[id]);
-    if (!myBoards.length) {
-      return null;
-    }
+export default (props: Props) => {
+  const { boards } = props;
+  if (!boards.length) {
+    return null;
+  }
 
-    return (
-      <div>
-        <Header as="h3">My retrospectives</Header>
-        <ul>
-          {myBoards.map(board => (
-            <li key={board.id}>
+  return (
+    <div style={{ marginTop: 40 }}>
+      <Header as="h3">Recent retrospectives</Header>
+      <List divided selection>
+        {boards.map(board => (
+          <List.Item key={board.id} as={Link} to={`/boards/${board.id}`}>
+            <List.Content>
               {board.state === 'present' ? (
-                <Link to={`/boards/${board.id}`}>
-                  {board.label || board.id} ({board.role})
-                </Link>
+                <React.Fragment>
+                  <List.Header>{board.label || board.id}</List.Header>
+                  <List.Description>
+                    {board.role === 'owner'
+                      ? `You created this retrospective on ${board.createdAt.toLocaleDateString()}`
+                      : 'You participated'}
+                  </List.Description>
+                </React.Fragment>
               ) : (
-                <span>loading&hellip;</span>
+                <List.Description>loading&hellip;</List.Description>
               )}
-            </li>
-          ))}
-        </ul>
-        <pre>{JSON.stringify(myBoards, null, 2)}</pre>
-      </div>
-    );
-  }
-
-  componentWillMount() {
-    this.props.dispatch(loadMyBoards());
-  }
-}
-
-export default connect((state: State) => ({ boards: state.boards }))(MyBoards);
+            </List.Content>
+          </List.Item>
+        ))}
+      </List>
+    </div>
+  );
+};

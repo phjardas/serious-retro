@@ -43,7 +43,7 @@ function renderPresent(board: BoardData, props: Props) {
 
   return (
     <Container fluid>
-      <Grid padded>
+      <Grid padded stackable>
         {board.role === 'owner' && (
           <Grid.Row>
             <Grid.Column>
