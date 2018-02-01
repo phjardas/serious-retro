@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Container, Grid, Loader, SemanticWIDTHSNUMBER } from 'semantic-ui-react';
+import { Container, Grid, Loader, Message, SemanticWIDTHSNUMBER } from 'semantic-ui-react';
 
 import { Board, BoardData, BoardCards, Card } from '../redux';
 import Category from './Category';
@@ -16,6 +16,14 @@ export interface Props {
 
 function renderPending() {
   return <Loader active content="Loading retrospective…" />;
+}
+
+function renderNotFound() {
+  return (
+    <Container style={{ marginTop: 60 }}>
+      <Message negative size="large" icon="warning sign" header="Retrospective not found" content="Maybe it was deleted?" />
+    </Container>
+  );
 }
 
 function renderPresent(board: BoardData, props: Props) {
@@ -60,7 +68,7 @@ export default (props: Props) => {
     case 'present':
       return renderPresent(board, props);
     case 'deleted':
-      return <p>Not found!</p>;
+      return renderNotFound();
     default:
       return <p>ooops</p>;
   }

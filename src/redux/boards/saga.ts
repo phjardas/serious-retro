@@ -56,10 +56,13 @@ function* visitBoard(action: any) {
   const { id } = action.payload;
   const userId: string = yield select((state: any) => state.user && state.user.id);
   const doc = boardsColl.doc(id);
+
   firestore.runTransaction(async tx => {
     const d = await tx.get(doc);
-    const role = d.data().participants[userId] || 'participant';
-    tx.update(doc, { [`participants.${userId}`]: role });
+    if (d.exists) {
+      const role = d.data().participants[userId] || 'participant';
+      tx.update(doc, { [`participants.${userId}`]: role });
+    }
   });
 }
 
