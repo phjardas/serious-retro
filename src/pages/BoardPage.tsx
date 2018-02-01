@@ -16,6 +16,7 @@ import {
   saveCard,
   abortCard,
   updateBoardSettings,
+  exportBoard,
   BoardSettings,
 } from '../redux';
 import Layout from '../components/Layout';
@@ -64,6 +65,7 @@ class BoardPage extends React.Component<Props, {}> {
           saveCard={(cardId, content) => dispatch(saveCard({ boardId: board.id, cardId, content }))}
           abortCard={cardId => dispatch(abortCard({ boardId: board.id, cardId }))}
           updateSettings={(settings: BoardSettings) => dispatch(updateBoardSettings(board.id, settings))}
+          exportBoard={(exporter: string) => dispatch(exportBoard(board.id, exporter))}
         />
       </Layout>
     );

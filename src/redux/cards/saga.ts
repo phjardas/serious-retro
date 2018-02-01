@@ -1,6 +1,5 @@
 import * as firebase from 'firebase';
 import { call, select, takeEvery } from 'redux-saga/effects';
-
 import {
   SYNCHRONIZE_CARDS,
   CARD_ADDED,

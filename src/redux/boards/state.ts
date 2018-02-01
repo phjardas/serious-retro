@@ -10,6 +10,7 @@ export interface Category {
 }
 
 export interface BoardData {
+  id?: string;
   createdAt: Date;
   label?: string;
   categories: { [id: string]: Category };

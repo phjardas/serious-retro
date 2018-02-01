@@ -17,3 +17,5 @@ export const BOARD_DELETED = 'board.deleted';
 export const UPDATE_BOARD_SETTINGS = 'updateBoardSettings';
 export const UPDATE_BOARD_SETTINGS_SUCCESS = 'updateBoardSettings.success';
 export const UPDATE_BOARD_SETTINGS_ERROR = 'updateBoardSettings.error';
+
+export const EXPORT_BOARD = 'exportBoard';

@@ -29,15 +29,17 @@ class Layout extends React.Component<Props, {}> {
             <Menu.Item as={Link} to="/">
               {title || 'Serious Retrospective'}
             </Menu.Item>
-            <Dropdown item text="Retrospectives">
-              <Dropdown.Menu>
-                {myBoards.map(board => (
-                  <Dropdown.Item key={board.id} as={Link} to={`/boards/${board.id}`}>
-                    {board.state === 'present' ? board.label || board.id : 'loading&hellip;'}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
+            {myBoards.length > 0 && (
+              <Dropdown item text="Retrospectives">
+                <Dropdown.Menu>
+                  {myBoards.map(board => (
+                    <Dropdown.Item key={board.id} as={Link} to={`/boards/${board.id}`}>
+                      {board.state === 'present' ? board.label || board.id : 'loading&hellip;'}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </Container>
         </Menu>
         <div style={{ marginTop: 40 }}>{children}</div>

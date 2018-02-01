@@ -17,8 +17,9 @@ import {
   UPDATE_BOARD_SETTINGS,
   UPDATE_BOARD_SETTINGS_SUCCESS,
   UPDATE_BOARD_SETTINGS_ERROR,
+  EXPORT_BOARD,
 } from './types';
-import { createBoardSuccess, createBoardError } from './actions';
+import { createBoardSuccess, createBoardError, BoardSettings } from './actions';
 import {
   connectFirestoreDoc,
   connectFirestoreCollection,
@@ -26,8 +27,8 @@ import {
   CollectionDocumentUpdated,
   CollectionDocumentDeleted,
 } from '../common/saga';
-import { synchronizeCards } from '../cards/actions';
-import { BoardSettings } from 'home/phjardas/workspace/serious-retro/src/redux';
+import { synchronizeCards, BoardCards } from '../cards';
+import { exportBoard as createBoardExport } from './export';
 
 const firestore = firebase.firestore();
 const boardsColl = firestore.collection('boards');
@@ -77,7 +78,7 @@ function* connectBoard(action: any) {
 
   yield fork(connectFirestoreDoc, doc, {
     pending() {
-      return { type: BOARD_PENDING };
+      return { type: BOARD_PENDING, payload: { id } };
     },
     updated(payload: CollectionDocumentUpdated) {
       return {
@@ -138,6 +139,32 @@ function* updateSettings(action: any) {
   }
 }
 
+function* exportBoard(action: any) {
+  const { id, exporter } = action.payload;
+  const board: BoardData = yield select((state: any) => state.boards.items[id]);
+  const cards: BoardCards = yield select((state: any) => state.cards[id]);
+  const ex = yield call(createBoardExport, exporter, board, cards);
+  yield call(downloadFile, ex);
+}
+
+function downloadFile(file: { filename: string; contentType: string; content: any }) {
+  const blob = new Blob([file.content], { type: file.contentType });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  link.href = url;
+  link.setAttribute('download', file.filename);
+
+  if (typeof link.download === 'undefined') {
+    link.setAttribute('target', '_blank');
+  }
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}
+
 export function* saga() {
   yield takeEvery(CREATE_BOARD, createBoard);
   yield takeEvery(CONNECT_BOARD, connectBoard);
@@ -145,4 +172,5 @@ export function* saga() {
   yield takeEvery(VISIT_BOARD, visitBoard);
   yield takeEvery(LOAD_MY_BOARDS, loadMyBoards);
   yield takeEvery(UPDATE_BOARD_SETTINGS, updateSettings);
+  yield takeEvery(EXPORT_BOARD, exportBoard);
 }
