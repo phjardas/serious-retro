@@ -11,6 +11,7 @@ import {
   ABORT_CARD,
   SAVE_CARD,
   DELETE_CARD,
+  LOAD_MY_BOARDS,
 } from './types';
 
 export const createBoard = createAction(CREATE_BOARD, (history: History) => ({ history }));
@@ -23,3 +24,4 @@ export const editCard = createAction(EDIT_CARD, (payload: { boardId: string; car
 export const abortCard = createAction(ABORT_CARD, (payload: { boardId: string; cardId: string }) => payload);
 export const saveCard = createAction(SAVE_CARD, (payload: { boardId: string; cardId?: string; content: string }) => payload);
 export const deleteCard = createAction(DELETE_CARD, (payload: { boardId: string; cardId: string }) => payload);
+export const loadMyBoards = createAction(LOAD_MY_BOARDS);

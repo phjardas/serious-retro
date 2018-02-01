@@ -21,6 +21,8 @@ import {
   SAVE_CARD,
   ABORT_CARD,
   CREATE_CARD,
+  LOAD_MY_BOARDS,
+  MY_BOARD_UPDATE,
 } from './types';
 import { createBoardSuccess, createBoardError } from './actions';
 
@@ -92,7 +94,7 @@ type CollectionDocumentUpdated = { id: string; data: any };
 type CollectionDocumentDeleted = { id: string };
 
 function* connectFirestoreCollection(
-  ref: firebase.firestore.CollectionReference,
+  ref: firebase.firestore.Query,
   actions: {
     added(payload: CollectionDocumentAdded): any;
     updated(payload: CollectionDocumentUpdated): any;
@@ -100,25 +102,28 @@ function* connectFirestoreCollection(
   }
 ) {
   const channel = yield eventChannel(emit =>
-    ref.onSnapshot(snapshot =>
-      snapshot.docChanges.forEach(change => {
-        switch (change.type) {
-          case 'added':
-            emit(actions.added({ id: change.doc.id, data: change.doc.data() }));
-            break;
+    ref.onSnapshot(
+      snapshot =>
+        snapshot.docChanges.forEach(change => {
+          switch (change.type) {
+            case 'added':
+              emit(actions.added({ id: change.doc.id, data: change.doc.data() }));
+              break;
 
-          case 'removed':
-            emit(actions.deleted({ id: change.doc.id }));
-            break;
+            case 'removed':
+              emit(actions.deleted({ id: change.doc.id }));
+              break;
 
-          case 'modified':
-            emit(actions.updated({ id: change.doc.id, data: change.doc.data() }));
-            break;
+            case 'modified':
+              emit(actions.updated({ id: change.doc.id, data: change.doc.data() }));
+              break;
 
-          default:
-            console.error('Unrecognized snapshot change type: %s', change.type);
-        }
-      })
+            default:
+              console.error('Unrecognized snapshot change type: %s', change.type);
+          }
+        }),
+      // FIXME connectFirestoreCollection: handle errors
+      err => console.error('Error synchronizing firestore collection:', err)
     )
   );
 
@@ -168,6 +173,7 @@ function* connectBoard(action: any) {
 
 function* disconnectBoard(action: any) {
   const { id } = action.payload;
+  // FIXME disconnectBoard: implement
   yield call(console.log.bind(console), 'disconnecting board %s', id);
 }
 
@@ -211,6 +217,16 @@ function* deleteCard(action: any) {
   yield call(doc.delete.bind(doc));
 }
 
+function* loadMyBoards() {
+  const userId = yield select<State>(state => state.user && state.user.id);
+  const query = boardsColl.where('owner', '==', userId);
+  yield connectFirestoreCollection(query, {
+    added: (payload: CollectionDocumentAdded) => ({ type: MY_BOARD_UPDATE, payload }),
+    updated: (payload: CollectionDocumentUpdated) => ({ type: MY_BOARD_UPDATE, payload }),
+    deleted: (payload: CollectionDocumentDeleted) => ({ type: MY_BOARD_UPDATE, payload }),
+  });
+}
+
 export function* rootSaga() {
   yield initialize();
   yield takeEvery(CREATE_BOARD, createBoard);
@@ -221,4 +237,5 @@ export function* rootSaga() {
   yield takeEvery(SAVE_CARD, saveCard);
   yield takeEvery(ABORT_CARD, abortCard);
   yield takeEvery(DELETE_CARD, deleteCard);
+  yield takeEvery(LOAD_MY_BOARDS, loadMyBoards);
 }

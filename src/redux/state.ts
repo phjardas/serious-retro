@@ -49,6 +49,7 @@ export interface BoardCreation {
 export interface Boards {
   creation?: BoardCreation;
   items: { [id: string]: Board };
+  owned: { [id: string]: true };
 }
 
 export interface Card {
