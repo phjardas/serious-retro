@@ -7,5 +7,5 @@ cache:
 script:
 - npm run build
 - npm run fixme
-after_success:
+after_script:
 - ./travis-deploy.sh
