@@ -51,7 +51,7 @@ function renderPresent(board: BoardData, props: Props, settingsShown: boolean, s
           <Modal.Content>
             <BoardSettings
               board={board}
-              save={settings => {
+              save={(settings: Settings) => {
                 updateSettings(settings);
                 showSettings(false);
               }}
