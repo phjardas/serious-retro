@@ -41,19 +41,21 @@ function* createBoard(action: any) {
     const boardData: BoardData = {
       createdAt: new Date(),
       categories: [
-        { id: 'good', label: 'What went well?', order: 0, color: 'green' },
-        { id: 'bad', label: 'What went not so well?', order: 1, color: 'red' },
-        { id: 'learned', label: 'What have I learned?', order: 2, color: 'brown' },
-        { id: 'puzzle', label: 'What still puzzles me?', order: 3, color: 'orange' },
-        { id: 'actions', label: 'Action items', order: 4, color: 'blue' },
-      ].reduce((a, b) => ({ ...a, [b.id]: b }), {}),
+        { label: 'What went well?', order: 0, color: 'green' },
+        { label: 'What went not so well?', order: 1, color: 'red' },
+        { label: 'What have I learned?', order: 2, color: 'brown' },
+        { label: 'What still puzzles me?', order: 3, color: 'orange' },
+        { label: 'Action items', order: 4, color: 'blue' },
+      ]
+        .map((c, i) => ({ ...c, id: `cat${i}` }))
+        .reduce((a, b, i) => ({ ...a, [b.id]: b }), {}),
       participants: { [userId]: 'owner' },
       role: 'owner',
     };
 
-    const ref = yield call(boardsColl.add.bind(boardsColl), boardData);
-    yield put(createBoardSuccess(ref.id));
-    yield call(history.push.bind(history), `/boards/${ref.id}`);
+    const { id } = yield call(boardsColl.add.bind(boardsColl), boardData);
+    yield put(createBoardSuccess(id));
+    yield call(history.push.bind(history), `/boards/${id}`);
   } catch (error) {
     yield put(createBoardError(error));
   }

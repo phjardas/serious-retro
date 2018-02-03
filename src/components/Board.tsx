@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Container, Dropdown, Grid, Header, Loader, Menu, Message, Modal, SemanticWIDTHSNUMBER } from 'semantic-ui-react';
+import { Button, Container, Dropdown, Grid, Header, Loader, Menu, Message, Modal } from 'semantic-ui-react';
 
 import { Board, BoardData, BoardCards, Card, BoardSettings as Settings } from '../redux';
 import BoardSettings from './BoardSettings';
@@ -40,8 +40,6 @@ function renderPresent(board: BoardData, props: Props, settingsShown: boolean, s
   const categories = Object.keys(board.categories)
     .map(id => board.categories[id])
     .sort((a, b) => a.order - b.order);
-  const columns = Math.min(categories.length, 16) as SemanticWIDTHSNUMBER;
-  console.log('columns:', columns);
 
   return (
     <Container fluid>
@@ -67,6 +65,30 @@ function renderPresent(board: BoardData, props: Props, settingsShown: boolean, s
           <Dropdown.Menu>
             <Dropdown.Item text="HTML" onClick={() => exportBoard('html')} />
             <Dropdown.Item text="Markdown" onClick={() => exportBoard('markdown')} />
+          </Dropdown.Menu>
+        </Dropdown>
+
+        <Dropdown item text="Missing features">
+          <Dropdown.Menu>
+            <Message
+              info
+              header="Some features are still missing:"
+              content={
+                <div>
+                  <ul>
+                    <li>Close the board to prevent further editing</li>
+                    <li>Delete board</li>
+                  </ul>
+                  <p>Looking for a feature?</p>
+                  <Button
+                    primary
+                    content="Please submit an issue!"
+                    href="https://github.com/phjardas/serious-retro/issues"
+                    target="_blank"
+                  />
+                </div>
+              }
+            />
           </Dropdown.Menu>
         </Dropdown>
       </Menu>

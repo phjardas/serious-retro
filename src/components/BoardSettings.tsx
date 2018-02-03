@@ -1,13 +1,27 @@
 import * as React from 'react';
-import { Button, Form, Header } from 'semantic-ui-react';
+import { Button, Form, Header, Message, SemanticCOLORS } from 'semantic-ui-react';
 
 import { BoardData, Category } from '../redux';
 
-const colors = ['red', 'orange', 'yellow', 'olive', 'green', 'teal', 'blue', 'violet', 'purple', 'pink', 'brown', 'grey', 'black'];
+const colors: SemanticCOLORS[] = [
+  'red',
+  'orange',
+  'yellow',
+  'olive',
+  'green',
+  'teal',
+  'blue',
+  'violet',
+  'purple',
+  'pink',
+  'brown',
+  'grey',
+  'black',
+];
 
 export interface Props {
   board: BoardData;
-  save(settings: { label: string }): void;
+  save(settings: { label: string; categories: { [id: string]: Category } }): void;
   cancel(): void;
 }
 
@@ -35,10 +49,36 @@ export default class BoardSettings extends React.Component<Props, State> {
         <Header>Categories</Header>
         {categories.map(cat => (
           <Form.Group key={cat.id}>
-            <Form.Input label="Label" value={cat.label} />
-            <Form.Select label="Color" options={colors.map(c => ({ value: c, text: c }))} value={cat.color} />
+            <Form.Input value={cat.label} onChange={e => this.setCategoryValue(cat.id, 'label', e.currentTarget.value)} />
+            <Form.Select
+              selection
+              value={cat.color}
+              text={cat.color}
+              options={colors.map(c => ({
+                key: c,
+                value: c,
+                text: c,
+                label: { color: c, empty: true, circular: true },
+              }))}
+              onChange={e => this.setCategoryValue(cat.id, 'color', e.currentTarget.textContent)}
+            />
           </Form.Group>
         ))}
+
+        <Message
+          info
+          size="small"
+          icon="info circle"
+          header="Some features are still missing:"
+          content={
+            <ul>
+              <li>Add category</li>
+              <li>Remove category</li>
+              <li>Reorder categories</li>
+              <li>Allow editing for everyone</li>
+            </ul>
+          }
+        />
 
         <Button primary content="Save" icon="save" />
         <Button content="Cancel" onClick={this.props.cancel} />
@@ -46,7 +86,16 @@ export default class BoardSettings extends React.Component<Props, State> {
     );
   }
 
+  setCategoryValue(categoryId: string, field: string, value: any) {
+    this.setState({
+      categories: this.state.categories.map(cat => (cat.id === categoryId ? { ...cat, [field]: value } : cat)),
+    });
+  }
+
   submit() {
-    this.props.save({ label: this.state.label });
+    this.props.save({
+      label: this.state.label,
+      categories: this.state.categories.reduce((a, b, i) => ({ ...a, [b.id]: { ...b, order: i } }), {}),
+    });
   }
 }
