@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Container, Menu, Dropdown } from 'semantic-ui-react';
+import { Container, Icon, Menu, Dropdown } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { loadMyBoards, State, Boards } from '../redux';
@@ -28,6 +28,7 @@ class Layout extends React.Component<Props, {}> {
         <Menu fixed="top" inverted>
           <Container fluid>
             <Menu.Item as={Link} to="/">
+              <Icon name="comments" />
               {title ? title : 'Serious Retrospective'}
             </Menu.Item>
             {myBoards.length > 0 && (
