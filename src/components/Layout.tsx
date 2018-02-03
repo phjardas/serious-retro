@@ -6,6 +6,7 @@ import { Container, Menu, Dropdown } from 'semantic-ui-react';
 import { Helmet } from 'react-helmet';
 
 import { loadMyBoards, State, Boards } from '../redux';
+import Footer from './Footer';
 
 export interface Props {
   title?: string;
@@ -20,7 +21,7 @@ class Layout extends React.Component<Props, {}> {
     const myBoards = Object.keys(boards.mine).map(id => boards.items[id]);
 
     return (
-      <div>
+      <React.Fragment>
         <Helmet>
           <title>{title ? `${title} - ` : ''}Serious Retrospective</title>
         </Helmet>
@@ -42,8 +43,11 @@ class Layout extends React.Component<Props, {}> {
             )}
           </Container>
         </Menu>
-        <div style={{ marginTop: 40 }}>{children}</div>
-      </div>
+
+        {children}
+
+        <Footer />
+      </React.Fragment>
     );
   }
 

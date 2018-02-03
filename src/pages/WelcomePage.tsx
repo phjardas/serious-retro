@@ -23,7 +23,7 @@ class WelcomePage extends React.Component<Props, {}> {
 
     return (
       <Layout>
-        <Container text style={{ marginTop: 60 }}>
+        <Container text style={{ paddingTop: 60 }}>
           <Header as="h2">Welcome</Header>
           <CreateBoard pending={pending} createBoard={() => dispatch(createBoard(history))} />
           <MyBoards boards={myBoards} />
