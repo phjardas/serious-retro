@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { Button, Container, Dropdown, Grid, Header, Loader, Menu, Message, Modal } from 'semantic-ui-react';
+import { Route, Redirect } from 'react-router';
+import { NavLink } from 'react-router-dom';
+import { Container, Icon, Loader, Menu, Message, SemanticICONS } from 'semantic-ui-react';
 
-import { Board, BoardData, BoardCards, Card, BoardSettings as Settings } from '../redux';
-import BoardSettings from './BoardSettings';
-import Category from './Category';
+import { Board, BoardData, BoardCards, BoardSettings as Settings } from '../redux';
+import BoardCardsComp from './BoardCards';
+import BoardSettingsComp from './BoardSettings';
+import Participants from './Participants';
+import BoardExport from './BoardExport';
 
-export interface Props {
-  board: Board;
-  cards: BoardCards;
+export interface Actions {
   createCard(categoryId: string): void;
   editCard(cardId: string): void;
   deleteCard(cardId: string): void;
@@ -17,119 +19,74 @@ export interface Props {
   exportBoard(exporter: string): void;
 }
 
-function renderPending() {
-  return <Loader active content="Loading retrospective…" />;
+const PendingBoard = () => <Loader active content="Loading retrospective…" />;
+
+const DeletedBoard = () => (
+  <Container style={{ marginTop: 60 }}>
+    <Message negative size="large" icon="warning sign" header="Retrospective not found" content="Maybe it was deleted?" />
+  </Container>
+);
+
+interface PresentBoardProps extends Actions {
+  board: BoardData;
+  cards: BoardCards;
 }
 
-function renderNotFound() {
-  return (
-    <Container style={{ marginTop: 60 }}>
-      <Message negative size="large" icon="warning sign" header="Retrospective not found" content="Maybe it was deleted?" />
-    </Container>
-  );
+interface Tab {
+  id: string;
+  icon: SemanticICONS;
+  label: string;
 }
 
-function renderPresent(board: BoardData, props: Props, settingsShown: boolean, showSettings: (show: boolean) => void) {
-  const { cards, createCard, editCard, deleteCard, saveCard, abortCard, updateSettings, exportBoard } = props;
+const PresentBoard = (props: PresentBoardProps) => {
+  const { board, updateSettings, exportBoard } = props;
 
-  const categoryCards: (categoryId: string) => Card[] = categoryId =>
-    Object.keys(cards)
-      .map(id => cards[id])
-      .filter(card => card.categoryId === categoryId);
+  const tabs: Tab[] = [
+    { id: 'cards', icon: 'comments', label: 'Cards' },
+    { id: 'participants', icon: 'users', label: `Participants (${Object.keys(board.participants).length.toString()})` },
+    { id: 'export', icon: 'download', label: 'Export' },
+  ];
 
-  const categories = Object.keys(board.categories)
-    .map(id => board.categories[id])
-    .sort((a, b) => a.order - b.order);
+  if (board.role === 'owner') {
+    tabs.push({ id: 'settings', icon: 'setting', label: 'Settings' });
+  }
 
   return (
     <Container fluid>
-      {board.role === 'owner' && (
-        <Modal open={settingsShown} onClose={() => showSettings(false)}>
-          <Header content="Settings" />
-          <Modal.Content>
-            <BoardSettings
-              board={board}
-              save={(settings: Settings) => {
-                updateSettings(settings);
-                showSettings(false);
-              }}
-              cancel={() => showSettings(false)}
-            />
-          </Modal.Content>
-        </Modal>
-      )}
-
-      <Menu secondary>
-        {board.role === 'owner' && <Menu.Item content="Settings" icon="setting" onClick={() => showSettings(true)} />}
-        <Dropdown item text="Export as&hellip;">
-          <Dropdown.Menu>
-            <Dropdown.Item text="HTML" onClick={() => exportBoard('html')} />
-            <Dropdown.Item text="Markdown" onClick={() => exportBoard('markdown')} />
-          </Dropdown.Menu>
-        </Dropdown>
-
-        <Dropdown item text="Missing features">
-          <Dropdown.Menu>
-            <Message
-              info
-              header="Some features are still missing:"
-              content={
-                <div>
-                  <ul>
-                    <li>Close the board to prevent further editing</li>
-                    <li>Delete board</li>
-                  </ul>
-                  <p>Looking for a feature?</p>
-                  <Button
-                    primary
-                    content="Please submit an issue!"
-                    href="https://github.com/phjardas/serious-retro/issues"
-                    target="_blank"
-                  />
-                </div>
-              }
-            />
-          </Dropdown.Menu>
-        </Dropdown>
+      <Menu pointing secondary>
+        {board.label && <Menu.Item header content={board.label} />}
+        {tabs.map(tab => (
+          <Menu.Item key={tab.id} as={NavLink} to={`/boards/${board.id}/${tab.id}`}>
+            <Icon name={tab.icon} />
+            {tab.label}
+          </Menu.Item>
+        ))}
       </Menu>
 
-      <Grid padded>
-        {categories.map(category => (
-          <Grid.Column key={category.id} mobile={16} tablet={8} computer={4}>
-            <Category
-              category={category}
-              cards={categoryCards(category.id)}
-              createCard={() => createCard(category.id)}
-              editCard={editCard}
-              deleteCard={deleteCard}
-              saveCard={saveCard}
-              abortCard={abortCard}
-            />
-          </Grid.Column>
-        ))}
-      </Grid>
+      <Route path="/boards/:id/cards" component={() => <BoardCardsComp {...props} />} />
+      <Route path="/boards/:id/settings" component={() => <BoardSettingsComp board={board} save={updateSettings} />} />
+      <Route path="/boards/:id/participants" component={() => <Participants board={board} />} />
+      <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
+      <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
     </Container>
   );
+};
+
+export interface Props extends Actions {
+  board: Board;
+  cards: BoardCards;
 }
 
-interface State {
-  settingsShown: boolean;
-}
-
-export default class BoardComp extends React.Component<Props, State> {
-  state = { settingsShown: false };
-
-  render() {
-    const { board } = this.props;
-    switch (board.state) {
-      case 'pending':
-        return renderPending();
-      case 'present':
-        return renderPresent(board, this.props, this.state.settingsShown, show => this.setState({ settingsShown: show }));
-      case 'deleted':
-        return renderNotFound();
-      default:
-        return <p>ooops</p>;
-    }
+export default (props: Props) => {
+  const { board } = props;
+  switch (board.state) {
+    case 'pending':
+      return <PendingBoard />;
+    case 'present':
+      return <PresentBoard {...props} board={board} />;
+    case 'deleted':
+      return <DeletedBoard />;
+    default:
+      return <p>ooops</p>;
   }
-}
+};

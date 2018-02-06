@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Form, Header, Message, SemanticCOLORS } from 'semantic-ui-react';
+import { Button, Container, Form, Header, Message, SemanticCOLORS } from 'semantic-ui-react';
 
 import { BoardData, Category } from '../redux';
 
@@ -22,7 +22,6 @@ const colors: SemanticCOLORS[] = [
 export interface Props {
   board: BoardData;
   save(settings: { label: string; categories: { [id: string]: Category } }): void;
-  cancel(): void;
 }
 
 interface State {
@@ -43,46 +42,47 @@ export default class BoardSettings extends React.Component<Props, State> {
     const submit = this.submit.bind(this);
 
     return (
-      <Form onSubmit={submit}>
-        <Form.Input label="Retrospective name" value={label} onChange={e => this.setState({ label: e.currentTarget.value })} />
+      <Container>
+        <Form onSubmit={submit}>
+          <Form.Input label="Retrospective name" value={label} onChange={e => this.setState({ label: e.currentTarget.value })} />
 
-        <Header>Categories</Header>
-        {categories.map(cat => (
-          <Form.Group key={cat.id}>
-            <Form.Input value={cat.label} onChange={e => this.setCategoryValue(cat.id, 'label', e.currentTarget.value)} />
-            <Form.Select
-              selection
-              value={cat.color}
-              text={cat.color}
-              options={colors.map(c => ({
-                key: c,
-                value: c,
-                text: c,
-                label: { color: c, empty: true, circular: true },
-              }))}
-              onChange={e => this.setCategoryValue(cat.id, 'color', e.currentTarget.textContent)}
-            />
-          </Form.Group>
-        ))}
+          <Header>Categories</Header>
+          {categories.map(cat => (
+            <Form.Group key={cat.id}>
+              <Form.Input value={cat.label} onChange={e => this.setCategoryValue(cat.id, 'label', e.currentTarget.value)} />
+              <Form.Select
+                selection
+                value={cat.color}
+                text={cat.color}
+                options={colors.map(c => ({
+                  key: c,
+                  value: c,
+                  text: c,
+                  label: { color: c, empty: true, circular: true },
+                }))}
+                onChange={e => this.setCategoryValue(cat.id, 'color', e.currentTarget.textContent)}
+              />
+            </Form.Group>
+          ))}
 
-        <Message
-          info
-          size="small"
-          icon="info circle"
-          header="Some features are still missing:"
-          content={
-            <ul>
-              <li>Add category</li>
-              <li>Remove category</li>
-              <li>Reorder categories</li>
-              <li>Allow editing for everyone</li>
-            </ul>
-          }
-        />
+          <Message
+            info
+            size="small"
+            icon="info circle"
+            header="Some features are still missing:"
+            content={
+              <ul>
+                <li>Add category</li>
+                <li>Remove category</li>
+                <li>Reorder categories</li>
+                <li>Allow editing for everyone</li>
+              </ul>
+            }
+          />
 
-        <Button primary content="Save" icon="save" />
-        <Button content="Cancel" onClick={this.props.cancel} />
-      </Form>
+          <Button primary content="Save" icon="save" />
+        </Form>
+      </Container>
     );
   }
 

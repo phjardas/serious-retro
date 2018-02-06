@@ -33,8 +33,6 @@ export function* connectFirestoreDoc(
     }
   } catch (err) {
     console.error('error:', err);
-  } finally {
-    console.log('done.');
   }
 }
 
@@ -79,7 +77,5 @@ export function* connectFirestoreCollection(
     }
   } catch (err) {
     console.error('error:', err);
-  } finally {
-    console.log('done.');
   }
 }

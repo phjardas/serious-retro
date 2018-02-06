@@ -10,6 +10,7 @@ import {
   VISIT_BOARD,
   UPDATE_BOARD_SETTINGS,
   EXPORT_BOARD,
+  SET_USER_LABEL,
 } from './types';
 
 export const createBoard = createAction(CREATE_BOARD, (history: History) => ({ history }));
@@ -20,6 +21,7 @@ export const disconnectBoard = createAction(DISCONNECT_BOARD, (id: string) => ({
 export const loadMyBoards = createAction(LOAD_MY_BOARDS);
 export const visitBoard = createAction(VISIT_BOARD, (id: string) => ({ id }));
 export const exportBoard = createAction(EXPORT_BOARD, (id: string, exporter: string) => ({ id, exporter }));
+export const setUserLabel = createAction(SET_USER_LABEL, (boardId: string, label: string) => ({ boardId, label }));
 
 export interface BoardSettings {
   label: string;

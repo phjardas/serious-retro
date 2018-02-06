@@ -18,6 +18,9 @@ import {
   UPDATE_BOARD_SETTINGS_SUCCESS,
   UPDATE_BOARD_SETTINGS_ERROR,
   EXPORT_BOARD,
+  SET_USER_LABEL,
+  SET_USER_LABEL_SUCCESS,
+  SET_USER_LABEL_ERROR,
 } from './types';
 import { createBoardSuccess, createBoardError, BoardSettings } from './actions';
 import {
@@ -49,7 +52,7 @@ function* createBoard(action: any) {
       ]
         .map((c, i) => ({ ...c, id: `cat${i}` }))
         .reduce((a, b, i) => ({ ...a, [b.id]: b }), {}),
-      participants: { [userId]: 'owner' },
+      participants: { [userId]: { userId, role: 'owner' } },
       role: 'owner',
     };
 
@@ -69,8 +72,8 @@ function* visitBoard(action: any) {
   firestore.runTransaction(async tx => {
     const d = await tx.get(doc);
     if (d.exists) {
-      const role = d.data().participants[userId] || 'participant';
-      tx.update(doc, { [`participants.${userId}`]: role });
+      const { role } = d.data().participants[userId] || { role: 'participant' };
+      tx.update(doc, { [`participants.${userId}.role`]: role });
     }
   });
 }
@@ -91,7 +94,7 @@ function* connectBoard(action: any) {
           ...payload,
           data: {
             ...payload.data,
-            role: payload.data.participants[userId],
+            role: payload.data.participants[userId].role,
           },
         },
       };
@@ -112,14 +115,14 @@ function* disconnectBoard(action: any) {
 
 function* loadMyBoards() {
   const userId: string = yield select((state: any) => state.user && state.user.id);
-  const query = boardsColl.where(`participants.${userId}`, '>', '');
+  const query = boardsColl.where(`participants.${userId}.role`, '>', '');
   const modified = (payload: CollectionDocumentAdded | CollectionDocumentUpdated) => ({
     type: MY_BOARD_UPDATE,
     payload: {
       ...payload,
       data: {
         ...payload.data,
-        role: payload.data.participants[userId],
+        role: payload.data.participants[userId].role,
       },
     },
   });
@@ -169,6 +172,19 @@ function downloadFile(file: { filename: string; contentType: string; content: an
   window.URL.revokeObjectURL(url);
 }
 
+function* setUserLabel(action: any) {
+  const { boardId, label } = action.payload;
+  const userId: string = yield select((state: any) => state.user && state.user.id);
+
+  try {
+    const doc = boardsColl.doc(boardId);
+    yield call(doc.update.bind(doc), { [`participants.${userId}.label`]: label });
+    yield put({ type: SET_USER_LABEL_SUCCESS, payload: { boardId, label } });
+  } catch (error) {
+    yield put({ type: SET_USER_LABEL_ERROR, payload: { boardId, label }, error });
+  }
+}
+
 export function* saga() {
   yield takeEvery(CREATE_BOARD, createBoard);
   yield takeEvery(CONNECT_BOARD, connectBoard);
@@ -177,4 +193,5 @@ export function* saga() {
   yield takeEvery(LOAD_MY_BOARDS, loadMyBoards);
   yield takeEvery(UPDATE_BOARD_SETTINGS, updateSettings);
   yield takeEvery(EXPORT_BOARD, exportBoard);
+  yield takeEvery(SET_USER_LABEL, setUserLabel);
 }

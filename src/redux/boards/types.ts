@@ -15,7 +15,11 @@ export const BOARD_UPDATED = 'board.updated';
 export const BOARD_DELETED = 'board.deleted';
 
 export const UPDATE_BOARD_SETTINGS = 'updateBoardSettings';
-export const UPDATE_BOARD_SETTINGS_SUCCESS = 'updateBoardSettings.success';
-export const UPDATE_BOARD_SETTINGS_ERROR = 'updateBoardSettings.error';
+export const UPDATE_BOARD_SETTINGS_SUCCESS = `${UPDATE_BOARD_SETTINGS}.success`;
+export const UPDATE_BOARD_SETTINGS_ERROR = `${UPDATE_BOARD_SETTINGS}.error`;
 
 export const EXPORT_BOARD = 'exportBoard';
+
+export const SET_USER_LABEL = 'setUserLabel';
+export const SET_USER_LABEL_SUCCESS = `${SET_USER_LABEL}.success`;
+export const SET_USER_LABEL_ERROR = `${SET_USER_LABEL}.error`;
