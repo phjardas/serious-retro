@@ -45,7 +45,7 @@ class Layout extends React.Component<Props, {}> {
           </Container>
         </Menu>
 
-        {children}
+        <div style={{ marginTop: 40 }}>{children}</div>
 
         <Footer />
       </React.Fragment>
