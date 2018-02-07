@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Route, Redirect } from 'react-router';
+import { Route, Redirect, Switch } from 'react-router';
 import { NavLink } from 'react-router-dom';
-import { Container, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
+import BottomNavigation, { BottomNavigationAction } from 'material-ui/BottomNavigation';
+import MessageIcon from 'material-ui-icons/Message';
+import PeopleIcon from 'material-ui-icons/People';
+import SettingsIcon from 'material-ui-icons/Settings';
 
 import { BoardData, BoardCards, BoardSettings as Settings } from '../redux';
-import BoardCardsComp from './BoardCards';
-import BoardSettingsComp from './BoardSettings';
-import Participants from './Participants';
-import BoardExport from './BoardExport';
 
 export interface Actions {
   createCard(categoryId: string): void;
@@ -25,41 +24,46 @@ interface Props extends Actions {
 }
 
 interface Tab {
-  id: string;
-  icon: SemanticICONS;
+  path: string;
   label: string;
+  icon: React.ReactElement<any>;
+  component: React.ComponentType<any>;
+}
+
+const tabs: Tab[] = [
+  { path: '/boards/:id/cards', label: 'Cards', icon: <MessageIcon />, component: () => <p>Cards</p> },
+  { path: '/boards/:id/participants', label: 'Participants', icon: <PeopleIcon />, component: () => <p>Participants</p> },
+  { path: '/boards/:id/settings', label: 'Settings', icon: <SettingsIcon />, component: () => <p>Settings</p> },
+];
+
+function tabContent(tab: Tab, props: Props) {
+  const { board } = props;
+
+  return () => (
+    <div>
+      <tab.component {...props} />
+      <BottomNavigation showLabels value={tab.path}>
+        {tabs.map(t => (
+          <BottomNavigationAction
+            key={t.path}
+            value={t.path}
+            label={t.label}
+            icon={t.icon}
+            component={p => <NavLink exact to={t.path.replace(':id', board.id!)} {...p} />}
+          />
+        ))}
+      </BottomNavigation>
+    </div>
+  );
 }
 
 export default (props: Props) => {
-  const { board, updateSettings, exportBoard } = props;
-
-  const tabs: Tab[] = [
-    { id: 'cards', icon: 'comments', label: 'Cards' },
-    { id: 'participants', icon: 'users', label: `Participants (${Object.keys(board.participants).length.toString()})` },
-    { id: 'export', icon: 'download', label: 'Export' },
-  ];
-
-  if (board.role === 'owner') {
-    tabs.push({ id: 'settings', icon: 'setting', label: 'Settings' });
-  }
+  const { board } = props;
 
   return (
-    <Container fluid>
-      <Menu pointing secondary>
-        {board.label && <Menu.Item header content={board.label} />}
-        {tabs.map(tab => (
-          <Menu.Item key={tab.id} as={NavLink} to={`/boards/${board.id}/${tab.id}`}>
-            <Icon name={tab.icon} />
-            {tab.label}
-          </Menu.Item>
-        ))}
-      </Menu>
-
-      <Route path="/boards/:id/cards" component={() => <BoardCardsComp {...props} />} />
-      <Route path="/boards/:id/settings" component={() => <BoardSettingsComp board={board} save={updateSettings} />} />
-      <Route path="/boards/:id/participants" component={() => <Participants board={board} />} />
-      <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
-      <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
-    </Container>
+    <Switch>
+      {tabs.map(tab => <Route key={tab.path} path={tab.path} component={tabContent(tab, props)} />)}
+      <Redirect to={`/boards/${board.id}/cards`} />
+    </Switch>
   );
 };

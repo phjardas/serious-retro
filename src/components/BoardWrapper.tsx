@@ -1,16 +1,20 @@
 import * as React from 'react';
-import { Container, Loader, Message } from 'semantic-ui-react';
+import { CircularProgress } from 'material-ui/Progress';
+import Typography from 'material-ui/Typography/Typography';
 
 import { Board, BoardCards } from '../redux';
 import BoardComp, { Actions } from './Board';
 
-const PendingBoard = () => <Loader active content="Loading retrospective…" />;
-
-const DeletedBoard = () => (
-  <Container style={{ marginTop: 60 }}>
-    <Message negative size="large" icon="warning sign" header="Retrospective not found" content="Maybe it was deleted?" />
-  </Container>
+const PendingBoard = () => (
+  <Typography variant="caption" align="center">
+    <div>
+      <CircularProgress />
+    </div>
+    Loading retrospective
+  </Typography>
 );
+
+const DeletedBoard = () => <p>Retrospective not found. Maybe it was deleted?</p>;
 
 export interface Props extends Actions {
   board: Board;
