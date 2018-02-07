@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { Container, List, Message } from 'semantic-ui-react';
 
-import { BoardData } from '../redux';
+import { BoardData, User } from '../redux';
 
 export interface Props {
   board: BoardData;
+  user: User;
 }
 
 export default (props: Props) => {
+  const { board, user } = props;
   const url = location.href.replace(/\/participants$/, '');
 
   return (
@@ -15,14 +17,15 @@ export default (props: Props) => {
       <Message info icon="share" header="Invite participants by sending them this link:" content={<a href={url}>{url}</a>} />
 
       <List relaxed>
-        {Object.keys(props.board.participants)
-          .map(id => ({ ...props.board.participants[id], id }))
+        {Object.keys(board.participants)
+          .map(id => ({ ...board.participants[id], id }))
           .sort((a, b) => (a.label || 'anonymous').localeCompare(b.label || 'anonymous'))
           .map(p => (
             <List.Item
               key={p.id}
               icon={p.role === 'owner' ? 'user' : 'user outline'}
-              content={p.label ? `${p.label} (${p.role})` : <em>anonymous {p.role}</em>}
+              header={p.label ? `${p.label} (${p.role})` : <em>an anonymous {p.role}</em>}
+              description={p.id === user.id && 'This is you!'}
             />
           ))}
       </List>

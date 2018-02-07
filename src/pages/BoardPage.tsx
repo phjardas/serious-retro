@@ -18,6 +18,7 @@ import {
   updateBoardSettings,
   exportBoard,
   BoardSettings,
+  User,
 } from '../redux';
 import Layout from '../components/Layout';
 import BoardComp from '../components/BoardWrapper';
@@ -29,13 +30,14 @@ interface Params {
 interface Props {
   boards: Boards;
   cards: Cards;
+  user: User;
   dispatch: Dispatch<{}>;
   match: Match<Params>;
 }
 
 class BoardPage extends React.Component<Props, {}> {
   render() {
-    const { boards, cards, dispatch, match } = this.props;
+    const { boards, cards, user, dispatch, match } = this.props;
     const { id } = match.params;
     const board = boards.items[id] || { state: 'pending' };
     const boardCards = cards[id] || {};
@@ -45,6 +47,7 @@ class BoardPage extends React.Component<Props, {}> {
         <BoardComp
           board={board}
           cards={boardCards}
+          user={user}
           createCard={categoryId => dispatch(createCard({ boardId: board.id, categoryId }))}
           editCard={cardId =>
             dispatch(
@@ -81,4 +84,4 @@ class BoardPage extends React.Component<Props, {}> {
   }
 }
 
-export default connect((state: State) => ({ boards: state.boards, cards: state.cards }))(BoardPage);
+export default connect((state: State) => ({ boards: state.boards, cards: state.cards, user: state.user }))(BoardPage);

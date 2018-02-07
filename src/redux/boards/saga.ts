@@ -94,7 +94,7 @@ function* connectBoard(action: any) {
           ...payload,
           data: {
             ...payload.data,
-            role: payload.data.participants[userId].role,
+            role: (payload.data.participants[userId] || { role: 'participant' }).role,
           },
         },
       };

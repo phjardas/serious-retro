@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Container, Loader, Message } from 'semantic-ui-react';
 
-import { Board, BoardCards } from '../redux';
+import { Board, BoardCards, User } from '../redux';
 import BoardComp, { Actions } from './Board';
 
 const PendingBoard = () => <Loader active content="Loading retrospective…" />;
@@ -15,6 +15,7 @@ const DeletedBoard = () => (
 export interface Props extends Actions {
   board: Board;
   cards: BoardCards;
+  user: User;
 }
 
 export default (props: Props) => {

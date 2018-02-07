@@ -3,7 +3,7 @@ import { Route, Redirect } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { Icon, Menu, SemanticICONS } from 'semantic-ui-react';
 
-import { BoardData, BoardCards, BoardSettings as Settings } from '../redux';
+import { BoardData, BoardCards, BoardSettings as Settings, User } from '../redux';
 import BoardCardsComp from './BoardCards';
 import BoardSettingsComp from './BoardSettings';
 import Participants from './Participants';
@@ -23,6 +23,7 @@ export interface Actions {
 interface Props extends Actions {
   board: BoardData;
   cards: BoardCards;
+  user: User;
 }
 
 interface Tab {
@@ -32,7 +33,7 @@ interface Tab {
 }
 
 export default (props: Props) => {
-  const { board, updateSettings, exportBoard } = props;
+  const { board, user, updateSettings, exportBoard } = props;
 
   const tabs: Tab[] = [
     { id: 'cards', icon: 'comments', label: 'Cards' },
@@ -58,7 +59,7 @@ export default (props: Props) => {
 
       <Route path="/boards/:id/cards" component={() => <BoardCardsComp {...props} />} />
       <Route path="/boards/:id/settings" component={() => <BoardSettingsComp board={board} save={updateSettings} />} />
-      <Route path="/boards/:id/participants" component={() => <Participants board={board} />} />
+      <Route path="/boards/:id/participants" component={() => <Participants board={board} user={user} />} />
       <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
       <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
     </React.Fragment>
