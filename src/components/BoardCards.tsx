@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Container, Grid } from 'semantic-ui-react';
+import { Grid } from 'semantic-ui-react';
 
 import { BoardData, BoardCards, Card } from '../redux';
 import Category from './Category';
@@ -27,22 +27,20 @@ export default (props: Props) => {
     .sort((a, b) => a.order - b.order);
 
   return (
-    <Container fluid>
-      <Grid padded>
-        {categories.map(category => (
-          <Grid.Column key={category.id} mobile={16} tablet={8} computer={4}>
-            <Category
-              category={category}
-              cards={categoryCards(category.id)}
-              createCard={() => createCard(category.id)}
-              editCard={editCard}
-              deleteCard={deleteCard}
-              saveCard={saveCard}
-              abortCard={abortCard}
-            />
-          </Grid.Column>
-        ))}
-      </Grid>
-    </Container>
+    <Grid padded>
+      {categories.map(category => (
+        <Grid.Column key={category.id} mobile={16} tablet={8} computer={4}>
+          <Category
+            category={category}
+            cards={categoryCards(category.id)}
+            createCard={() => createCard(category.id)}
+            editCard={editCard}
+            deleteCard={deleteCard}
+            saveCard={saveCard}
+            abortCard={abortCard}
+          />
+        </Grid.Column>
+      ))}
+    </Grid>
   );
 };

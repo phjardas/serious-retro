@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { Route, Redirect } from 'react-router';
 import { NavLink } from 'react-router-dom';
-import { Container, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
+import { Icon, Menu, SemanticICONS } from 'semantic-ui-react';
 
 import { BoardData, BoardCards, BoardSettings as Settings } from '../redux';
 import BoardCardsComp from './BoardCards';
 import BoardSettingsComp from './BoardSettings';
 import Participants from './Participants';
 import BoardExport from './BoardExport';
+import { NotMobile } from './Responsive';
 
 export interface Actions {
   createCard(categoryId: string): void;
@@ -44,13 +45,13 @@ export default (props: Props) => {
   }
 
   return (
-    <Container fluid>
+    <React.Fragment>
       <Menu pointing secondary>
         {board.label && <Menu.Item header content={board.label} />}
         {tabs.map(tab => (
           <Menu.Item key={tab.id} as={NavLink} to={`/boards/${board.id}/${tab.id}`}>
             <Icon name={tab.icon} />
-            {tab.label}
+            <NotMobile>{tab.label}</NotMobile>
           </Menu.Item>
         ))}
       </Menu>
@@ -60,6 +61,6 @@ export default (props: Props) => {
       <Route path="/boards/:id/participants" component={() => <Participants board={board} />} />
       <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
       <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
-    </Container>
+    </React.Fragment>
   );
 };
