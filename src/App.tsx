@@ -9,10 +9,10 @@ import BoardPage from './pages/BoardPage';
 export default () => (
   <Provider store={store}>
     <Router>
-      <div>
+      <React.Fragment>
         <Route exact path="/" component={WelcomePage} />
         <Route path="/boards/:id" component={BoardPage} />
-      </div>
+      </React.Fragment>
     </Router>
   </Provider>
 );
