@@ -20,7 +20,7 @@ import {
   BoardSettings,
 } from '../redux';
 import Layout from '../components/Layout';
-import BoardComp from '../components/Board';
+import BoardComp from '../components/BoardWrapper';
 
 interface Params {
   id: string;

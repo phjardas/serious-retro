@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Route, Redirect } from 'react-router';
 import { NavLink } from 'react-router-dom';
-import { Container, Icon, Loader, Menu, Message, SemanticICONS } from 'semantic-ui-react';
+import { Container, Icon, Menu, SemanticICONS } from 'semantic-ui-react';
 
-import { Board, BoardData, BoardCards, BoardSettings as Settings } from '../redux';
+import { BoardData, BoardCards, BoardSettings as Settings } from '../redux';
 import BoardCardsComp from './BoardCards';
 import BoardSettingsComp from './BoardSettings';
 import Participants from './Participants';
@@ -19,15 +19,7 @@ export interface Actions {
   exportBoard(exporter: string): void;
 }
 
-const PendingBoard = () => <Loader active content="Loading retrospective…" />;
-
-const DeletedBoard = () => (
-  <Container style={{ marginTop: 60 }}>
-    <Message negative size="large" icon="warning sign" header="Retrospective not found" content="Maybe it was deleted?" />
-  </Container>
-);
-
-interface PresentBoardProps extends Actions {
+interface Props extends Actions {
   board: BoardData;
   cards: BoardCards;
 }
@@ -38,7 +30,7 @@ interface Tab {
   label: string;
 }
 
-const PresentBoard = (props: PresentBoardProps) => {
+export default (props: Props) => {
   const { board, updateSettings, exportBoard } = props;
 
   const tabs: Tab[] = [
@@ -70,23 +62,4 @@ const PresentBoard = (props: PresentBoardProps) => {
       <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
     </Container>
   );
-};
-
-export interface Props extends Actions {
-  board: Board;
-  cards: BoardCards;
-}
-
-export default (props: Props) => {
-  const { board } = props;
-  switch (board.state) {
-    case 'pending':
-      return <PendingBoard />;
-    case 'present':
-      return <PresentBoard {...props} board={board} />;
-    case 'deleted':
-      return <DeletedBoard />;
-    default:
-      return <p>ooops</p>;
-  }
 };
