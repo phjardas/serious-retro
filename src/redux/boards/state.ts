@@ -19,7 +19,7 @@ export interface BoardParticipant extends User {
 export type BoardParticipants = { [userId: string]: BoardParticipant };
 
 export interface BoardData {
-  id?: string;
+  id: string;
   createdAt: Date;
   label?: string;
   categories: BoardCategories;

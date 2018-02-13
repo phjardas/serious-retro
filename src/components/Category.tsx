@@ -27,18 +27,20 @@ export default (props: Props) => {
         </div>
       </Header>
       <Segment attached color={category.color}>
-        {cards.map(card => (
-          <CardComp
-            key={card.id}
-            card={card}
-            participants={participants}
-            color={category.color}
-            edit={() => props.editCard(card.id)}
-            delete={() => props.deleteCard(card.id)}
-            save={content => props.saveCard(card.id, content)}
-            cancel={() => props.abortCard(card.id)}
-          />
-        ))}
+        {cards
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+          .map(card => (
+            <CardComp
+              key={card.id}
+              card={card}
+              participants={participants}
+              color={category.color}
+              edit={() => props.editCard(card.id)}
+              delete={() => props.deleteCard(card.id)}
+              save={content => props.saveCard(card.id, content)}
+              cancel={() => props.abortCard(card.id)}
+            />
+          ))}
         <Button content="Add new card" icon="add" color={category.color} onClick={createCard} />
       </Segment>
     </React.Fragment>

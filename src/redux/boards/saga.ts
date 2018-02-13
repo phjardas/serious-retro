@@ -42,7 +42,7 @@ function* createBoard(action: any) {
     const user: User = yield select((state: any) => state.user && state.user);
     const history: History = action.payload.history;
 
-    const boardData: BoardData = {
+    const boardData: Partial<BoardData> = {
       createdAt: new Date(),
       categories: [
         { label: 'What went well?', order: 0, color: 'green' },

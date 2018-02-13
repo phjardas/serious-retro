@@ -58,7 +58,12 @@ function* createCard(action: any) {
   const { boardId, categoryId } = action.payload;
   const userId: string = yield select((state: any) => state.user && state.user.id);
   const coll = boardsColl.doc(boardId).collection('cards');
-  yield call(coll.add.bind(coll), { categoryId, owner: userId, editedBy: userId });
+  yield call(coll.add.bind(coll), {
+    categoryId,
+    owner: userId,
+    editedBy: userId,
+    createdAt: new Date(),
+  });
 }
 
 function* editCard(action: any) {
