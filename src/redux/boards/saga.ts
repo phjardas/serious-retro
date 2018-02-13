@@ -39,7 +39,7 @@ const boardsColl = firestore.collection('boards');
 
 function* createBoard(action: any) {
   try {
-    const userId: string = yield select((state: any) => state.user && state.user.id);
+    const user: User = yield select((state: any) => state.user && state.user);
     const history: History = action.payload.history;
 
     const boardData: BoardData = {
@@ -53,7 +53,7 @@ function* createBoard(action: any) {
       ]
         .map((c, i) => ({ ...c, id: `cat${i}` }))
         .reduce((a, b, i) => ({ ...a, [b.id]: b }), {}),
-      participants: { [userId]: { userId, role: 'owner' } },
+      participants: { [user.id]: { ...user, role: 'owner' } },
       role: 'owner',
     };
 
@@ -179,7 +179,7 @@ function* setUserLabel(action: any) {
 
   try {
     const doc = boardsColl.doc(boardId);
-    yield call(doc.update.bind(doc), { [`participants.${userId}.label`]: label });
+    yield call(doc.update.bind(doc), { [`participants.${userId}.label`]: label, [`participants.${userId}.explicitLabel`]: true });
     yield put({ type: SET_USER_LABEL_SUCCESS, payload: { boardId, label } });
   } catch (error) {
     yield put({ type: SET_USER_LABEL_ERROR, payload: { boardId, label }, error });

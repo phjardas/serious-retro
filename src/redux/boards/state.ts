@@ -1,4 +1,5 @@
 import { Entity, ErrorInfo } from '../common/state';
+import { User } from '../user/state';
 
 export type ParticipationType = 'owner' | 'participant';
 
@@ -11,10 +12,7 @@ export interface Category {
 
 export type BoardCategories = { [id: string]: Category };
 
-export interface BoardParticipant {
-  userId: string;
-  label?: string;
-  color?: string;
+export interface BoardParticipant extends User {
   role: ParticipationType;
 }
 

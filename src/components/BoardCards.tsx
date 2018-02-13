@@ -1,12 +1,14 @@
 import * as React from 'react';
-import { Grid } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { Button, Grid, Message, Icon } from 'semantic-ui-react';
 
-import { BoardData, BoardCards, Card } from '../redux';
+import { BoardData, BoardCards, BoardParticipant, Card } from '../redux';
 import Category from './Category';
 
 export interface Props {
   board: BoardData;
   cards: BoardCards;
+  participant?: BoardParticipant;
   createCard(categoryId: string): void;
   editCard(cardId: string): void;
   deleteCard(cardId: string): void;
@@ -15,7 +17,7 @@ export interface Props {
 }
 
 export default (props: Props) => {
-  const { board, cards, createCard, editCard, deleteCard, saveCard, abortCard } = props;
+  const { board, cards, participant, createCard, editCard, deleteCard, saveCard, abortCard } = props;
 
   const categoryCards: (categoryId: string) => Card[] = categoryId =>
     Object.keys(cards)
@@ -28,20 +30,57 @@ export default (props: Props) => {
 
   return (
     <Grid padded>
-      {categories.map(category => (
-        <Grid.Column key={category.id} mobile={16} tablet={8} computer={4}>
-          <Category
-            category={category}
-            cards={categoryCards(category.id)}
-            participants={board.participants}
-            createCard={() => createCard(category.id)}
-            editCard={editCard}
-            deleteCard={deleteCard}
-            saveCard={saveCard}
-            abortCard={abortCard}
-          />
-        </Grid.Column>
-      ))}
+      <React.Fragment>
+        {!board.label &&
+          participant &&
+          participant.role === 'owner' && (
+            <Grid.Column mobile={16}>
+              <Message warning icon>
+                <Icon name="warning sign" />
+                <Message.Content>
+                  <Message.Header>Your retrospective has no name yet.</Message.Header>
+                  <Button
+                    as={Link}
+                    to={`/boards/${board.id}/settings`}
+                    primary
+                    content="Set a retrospective name now!"
+                    style={{ marginTop: '1rem' }}
+                  />
+                </Message.Content>
+              </Message>
+            </Grid.Column>
+          )}
+
+        {participant &&
+          !participant.explicitLabel && (
+            <Grid.Column mobile={16}>
+              <Message warning icon>
+                <Icon name="warning sign" />
+                <Message.Content>
+                  <Message.Header>
+                    You are currently using the name <em>{participant.label}</em>
+                  </Message.Header>
+                  <Button as={Link} to={`/boards/${board.id}/user`} primary content="Change your name now!" style={{ marginTop: '1rem' }} />
+                </Message.Content>
+              </Message>
+            </Grid.Column>
+          )}
+
+        {categories.map(category => (
+          <Grid.Column key={category.id} mobile={16} tablet={8} computer={4}>
+            <Category
+              category={category}
+              cards={categoryCards(category.id)}
+              participants={board.participants}
+              createCard={() => createCard(category.id)}
+              editCard={editCard}
+              deleteCard={deleteCard}
+              saveCard={saveCard}
+              abortCard={abortCard}
+            />
+          </Grid.Column>
+        ))}
+      </React.Fragment>
     </Grid>
   );
 };
