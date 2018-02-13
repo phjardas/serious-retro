@@ -22,7 +22,9 @@ export default (props: Props) => {
 
   return (
     <Dimmer.Dimmable as={Card} color={color} blurring dimmed={edited} fluid>
-      <Dimmer active={edited} content="edited by someone else" />
+      <Dimmer active={edited}>
+        edited by <UserLabel userId={card.editedBy} participants={participants} />
+      </Dimmer>
       {card.editing ? (
         <Card.Content>
           <CardForm content={card.content} save={save} cancel={cancel} />

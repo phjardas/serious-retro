@@ -4,11 +4,16 @@ import { BoardParticipants } from '../redux';
 
 export interface Props extends LabelProps {
   participants: BoardParticipants;
-  userId: string;
+  userId?: string;
 }
 
 export default function UserLabel(props: Props) {
-  const { participants, userId } = props;
+  const { participants, userId, ...rest } = props;
+
+  if (!userId) {
+    return null;
+  }
+
   const participant = participants[userId];
 
   const styles: React.CSSProperties = {};
@@ -17,7 +22,7 @@ export default function UserLabel(props: Props) {
   }
 
   return (
-    <Label {...props} style={styles}>
+    <Label {...rest} style={styles}>
       {participant.label || userId}
     </Label>
   );

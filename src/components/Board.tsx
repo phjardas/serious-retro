@@ -6,6 +6,7 @@ import { Icon, Menu, SemanticICONS } from 'semantic-ui-react';
 import { BoardData, BoardCards, BoardSettings as Settings, User } from '../redux';
 import BoardCardsComp from './BoardCards';
 import BoardSettingsComp from './BoardSettings';
+import UserSettings from './UserSettings';
 import Participants from './Participants';
 import BoardExport from './BoardExport';
 import { NotMobile } from './Responsive';
@@ -18,6 +19,7 @@ export interface Actions {
   abortCard(cardId: string): void;
   updateSettings(settings: Settings): void;
   exportBoard(exporter: string): void;
+  setUserLabel(label: string): void;
 }
 
 interface Props extends Actions {
@@ -33,12 +35,17 @@ interface Tab {
 }
 
 export default (props: Props) => {
-  const { board, user, updateSettings, exportBoard } = props;
+  const { board, user, updateSettings, exportBoard, setUserLabel } = props;
+
+  const participant = Object.keys(board.participants)
+    .map(id => board.participants[id])
+    .find(p => p.id === user.id);
 
   const tabs: Tab[] = [
     { id: 'cards', icon: 'comments', label: 'Cards' },
     { id: 'participants', icon: 'users', label: `Participants (${Object.keys(board.participants).length.toString()})` },
     { id: 'export', icon: 'download', label: 'Export' },
+    { id: 'user', icon: 'user', label: 'Settings' },
   ];
 
   if (board.role === 'owner') {
@@ -57,8 +64,9 @@ export default (props: Props) => {
         ))}
       </Menu>
 
-      <Route path="/boards/:id/cards" component={() => <BoardCardsComp {...props} />} />
+      <Route path="/boards/:id/cards" component={() => <BoardCardsComp {...props} participant={participant} />} />
       <Route path="/boards/:id/settings" component={() => <BoardSettingsComp board={board} save={updateSettings} />} />
+      <Route path="/boards/:id/user" component={() => <UserSettings participant={participant} setUserLabel={setUserLabel} />} />
       <Route path="/boards/:id/participants" component={() => <Participants board={board} user={user} />} />
       <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
       <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />

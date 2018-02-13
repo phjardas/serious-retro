@@ -19,6 +19,7 @@ import {
   exportBoard,
   BoardSettings,
   User,
+  setUserLabel,
 } from '../redux';
 import Layout from '../components/Layout';
 import BoardComp from '../components/BoardWrapper';
@@ -69,6 +70,7 @@ class BoardPage extends React.Component<Props, {}> {
           abortCard={cardId => dispatch(abortCard({ boardId: board.id, cardId }))}
           updateSettings={(settings: BoardSettings) => dispatch(updateBoardSettings(board.id, settings))}
           exportBoard={(exporter: string) => dispatch(exportBoard(board.id, exporter))}
+          setUserLabel={(label: string) => dispatch(setUserLabel(board.id, label))}
         />
       </Layout>
     );
