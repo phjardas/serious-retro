@@ -20,14 +20,22 @@ export default (props: Props) => {
         {Object.keys(board.participants)
           .map(id => ({ ...board.participants[id], id }))
           .sort((a, b) => (a.label || 'anonymous').localeCompare(b.label || 'anonymous'))
-          .map(p => (
-            <List.Item
-              key={p.id}
-              icon={p.role === 'owner' ? 'user' : 'user outline'}
-              header={p.label ? `${p.label} (${p.role})` : <em>an anonymous {p.role}</em>}
-              description={p.id === user.id && 'This is you!'}
-            />
-          ))}
+          .map(p => {
+            const styles: React.CSSProperties = {};
+            if (p.color) {
+              styles.color = p.color;
+            }
+
+            return (
+              <List.Item key={p.id}>
+                <List.Icon name={p.role === 'owner' ? 'user' : 'user outline'} style={styles} />
+                <List.Content>
+                  <List.Header style={styles}>{p.label ? `${p.label} (${p.role})` : <em>an anonymous {p.role}</em>}</List.Header>
+                  {p.id === user.id && <List.Description>This is you!</List.Description>}
+                </List.Content>
+              </List.Item>
+            );
+          })}
       </List>
     </Container>
   );

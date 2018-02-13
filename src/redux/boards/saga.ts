@@ -31,6 +31,7 @@ import {
   CollectionDocumentDeleted,
 } from '../common/saga';
 import { synchronizeCards, BoardCards } from '../cards';
+import { User } from '../user';
 import { exportBoard as createBoardExport } from './export';
 
 const firestore = firebase.firestore();
@@ -66,21 +67,21 @@ function* createBoard(action: any) {
 
 function* visitBoard(action: any) {
   const { id } = action.payload;
-  const userId: string = yield select((state: any) => state.user && state.user.id);
+  const user: User = yield select((state: any) => state.user);
   const doc = boardsColl.doc(id);
 
   firestore.runTransaction(async tx => {
     const d = await tx.get(doc);
     if (d.exists) {
-      const { role } = d.data().participants[userId] || { role: 'participant' };
-      tx.update(doc, { [`participants.${userId}.role`]: role });
+      const participant = { ...user, ...(d.data().participants[user.id] || { role: 'participant' }) };
+      tx.update(doc, { [`participants.${user.id}`]: participant });
     }
   });
 }
 
 function* connectBoard(action: any) {
   const { id } = action.payload;
-  const userId: string = yield select((state: any) => state.user && state.user.id);
+  const user: User = yield select((state: any) => state.user);
   const doc = boardsColl.doc(id);
 
   yield fork(connectFirestoreDoc, doc, {
@@ -94,7 +95,7 @@ function* connectBoard(action: any) {
           ...payload,
           data: {
             ...payload.data,
-            role: (payload.data.participants[userId] || { role: 'participant' }).role,
+            role: (payload.data.participants[user.id] || { role: 'participant' }).role,
           },
         },
       };
