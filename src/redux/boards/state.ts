@@ -9,18 +9,23 @@ export interface Category {
   color: 'red' | 'orange' | 'yellow' | 'olive' | 'green' | 'teal' | 'blue' | 'violet' | 'purple' | 'pink' | 'brown' | 'grey' | 'black';
 }
 
+export type BoardCategories = { [id: string]: Category };
+
 export interface BoardParticipant {
   userId: string;
   label?: string;
+  color?: string;
   role: ParticipationType;
 }
+
+export type BoardParticipants = { [userId: string]: BoardParticipant };
 
 export interface BoardData {
   id?: string;
   createdAt: Date;
   label?: string;
-  categories: { [id: string]: Category };
-  participants: { [userId: string]: BoardParticipant };
+  categories: BoardCategories;
+  participants: BoardParticipants;
   role: ParticipationType;
 }
 

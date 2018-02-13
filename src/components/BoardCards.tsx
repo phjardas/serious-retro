@@ -33,6 +33,7 @@ export default (props: Props) => {
           <Category
             category={category}
             cards={categoryCards(category.id)}
+            participants={board.participants}
             createCard={() => createCard(category.id)}
             editCard={editCard}
             deleteCard={deleteCard}

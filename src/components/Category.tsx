@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Button, Header, Segment } from 'semantic-ui-react';
 
-import { Category, Card } from '../redux';
+import { Category, Card, BoardParticipants } from '../redux';
 import CardComp from './Card';
 
 export interface Props {
   category: Category;
   cards: Card[];
+  participants: BoardParticipants;
   createCard(): void;
   editCard(cardId: string): void;
   deleteCard(cardId: string): void;
@@ -15,7 +16,7 @@ export interface Props {
 }
 
 export default (props: Props) => {
-  const { category, cards, createCard } = props;
+  const { category, cards, participants, createCard } = props;
 
   return (
     <React.Fragment>
@@ -30,6 +31,7 @@ export default (props: Props) => {
           <CardComp
             key={card.id}
             card={card}
+            participants={participants}
             color={category.color}
             edit={() => props.editCard(card.id)}
             delete={() => props.deleteCard(card.id)}
