@@ -15,7 +15,7 @@ export interface Props {
   cancel(): void;
 }
 
-export default (props: Props) => {
+export default function CardComp(props: Props) {
   const { card, color, participants, edit, save, cancel } = props;
   const edited = !!card.editedBy && !card.editing;
   const owner = { ...participants[card.owner], id: card.owner };
@@ -49,4 +49,4 @@ export default (props: Props) => {
       )}
     </Dimmer.Dimmable>
   );
-};
+}

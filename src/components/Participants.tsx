@@ -8,7 +8,7 @@ export interface Props {
   user: User;
 }
 
-export default (props: Props) => {
+export default function Participants(props: Props) {
   const { board, user } = props;
   const url = location.href.replace(/\/participants$/, '');
 
@@ -39,4 +39,4 @@ export default (props: Props) => {
       </List>
     </Container>
   );
-};
+}

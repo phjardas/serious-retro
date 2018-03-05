@@ -16,7 +16,7 @@ export interface Props {
   exportBoard(exporter: string): void;
 }
 
-export default (props: Props) => {
+export default function BoardExport(props: Props) {
   return (
     <Container>
       <p>Select a method to export your retrospective:</p>
@@ -25,4 +25,4 @@ export default (props: Props) => {
       </List>
     </Container>
   );
-};
+}

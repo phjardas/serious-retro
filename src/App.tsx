@@ -6,13 +6,15 @@ import { store } from './redux';
 import WelcomePage from './pages/WelcomePage';
 import BoardPage from './pages/BoardPage';
 
-export default () => (
-  <Provider store={store}>
-    <Router>
-      <React.Fragment>
-        <Route exact path="/" component={WelcomePage} />
-        <Route path="/boards/:id" component={BoardPage} />
-      </React.Fragment>
-    </Router>
-  </Provider>
-);
+export default function App() {
+  return (
+    <Provider store={store}>
+      <Router>
+        <React.Fragment>
+          <Route exact path="/" component={WelcomePage} />
+          <Route path="/boards/:id" component={BoardPage} />
+        </React.Fragment>
+      </Router>
+    </Provider>
+  );
+}

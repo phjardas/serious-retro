@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Route, Redirect } from 'react-router';
+import { Location } from 'history';
 import { NavLink } from 'react-router-dom';
 import { Icon, Menu, SemanticICONS } from 'semantic-ui-react';
 
-import { BoardData, BoardCards, BoardSettings as Settings, User } from '../redux';
+import { BoardData, BoardSettings as Settings, User } from '../redux';
 import BoardCardsComp from './BoardCards';
 import BoardSettingsComp from './BoardSettings';
 import UserSettings from './UserSettings';
@@ -11,7 +12,7 @@ import Participants from './Participants';
 import BoardExport from './BoardExport';
 import { NotMobile } from './Responsive';
 
-export interface Actions {
+interface Actions {
   createCard(categoryId: string): void;
   editCard(cardId: string): void;
   deleteCard(cardId: string): void;
@@ -24,8 +25,8 @@ export interface Actions {
 
 interface Props extends Actions {
   board: BoardData;
-  cards: BoardCards;
   user: User;
+  location: Location;
 }
 
 interface Tab {
@@ -34,42 +35,44 @@ interface Tab {
   label: string;
 }
 
-export default (props: Props) => {
-  const { board, user, updateSettings, exportBoard, setUserLabel } = props;
+export default class Board extends React.Component<Props> {
+  render() {
+    const { board, user, updateSettings, exportBoard, setUserLabel } = this.props;
 
-  const participant = Object.keys(board.participants)
-    .map(id => board.participants[id])
-    .find(p => p.id === user.id);
+    const participant = Object.keys(board.participants)
+      .map(id => board.participants[id])
+      .find(p => p.id === user.id);
 
-  const tabs: Tab[] = [
-    { id: 'cards', icon: 'comments', label: 'Cards' },
-    { id: 'participants', icon: 'users', label: `Participants (${Object.keys(board.participants).length.toString()})` },
-    { id: 'export', icon: 'download', label: 'Export' },
-    { id: 'user', icon: 'user', label: 'Settings' },
-  ];
+    const tabs: Tab[] = [
+      { id: 'cards', icon: 'comments', label: 'Cards' },
+      { id: 'participants', icon: 'users', label: `Participants (${Object.keys(board.participants).length.toString()})` },
+      { id: 'export', icon: 'download', label: 'Export' },
+      { id: 'user', icon: 'user', label: 'Settings' },
+    ];
 
-  if (board.role === 'owner') {
-    tabs.push({ id: 'settings', icon: 'setting', label: 'Settings' });
+    if (board.role === 'owner') {
+      tabs.push({ id: 'settings', icon: 'setting', label: 'Settings' });
+    }
+
+    return (
+      <React.Fragment>
+        <Menu pointing secondary>
+          {board.label && <Menu.Item header content={board.label} />}
+          {tabs.map(tab => (
+            <Menu.Item key={tab.id} as={NavLink} to={`/boards/${board.id}/${tab.id}`}>
+              <Icon name={tab.icon} />
+              <NotMobile>{tab.label}</NotMobile>
+            </Menu.Item>
+          ))}
+        </Menu>
+
+        <Route path="/boards/:id/cards" component={() => <BoardCardsComp {...this.props} participant={participant} />} />
+        <Route path="/boards/:id/settings" component={() => <BoardSettingsComp board={board} save={updateSettings} />} />
+        <Route path="/boards/:id/user" component={() => <UserSettings participant={participant} setUserLabel={setUserLabel} />} />
+        <Route path="/boards/:id/participants" component={() => <Participants board={board} user={user} />} />
+        <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
+        <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
+      </React.Fragment>
+    );
   }
-
-  return (
-    <React.Fragment>
-      <Menu pointing secondary>
-        {board.label && <Menu.Item header content={board.label} />}
-        {tabs.map(tab => (
-          <Menu.Item key={tab.id} as={NavLink} to={`/boards/${board.id}/${tab.id}`}>
-            <Icon name={tab.icon} />
-            <NotMobile>{tab.label}</NotMobile>
-          </Menu.Item>
-        ))}
-      </Menu>
-
-      <Route path="/boards/:id/cards" component={() => <BoardCardsComp {...props} participant={participant} />} />
-      <Route path="/boards/:id/settings" component={() => <BoardSettingsComp board={board} save={updateSettings} />} />
-      <Route path="/boards/:id/user" component={() => <UserSettings participant={participant} setUserLabel={setUserLabel} />} />
-      <Route path="/boards/:id/participants" component={() => <Participants board={board} user={user} />} />
-      <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
-      <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
-    </React.Fragment>
-  );
-};
+}

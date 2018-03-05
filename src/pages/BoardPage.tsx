@@ -2,88 +2,43 @@ import * as React from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { match as Match } from 'react-router';
+import { Location } from 'history';
 
-import {
-  State,
-  Boards,
-  Cards,
-  visitBoard,
-  connectBoard,
-  disconnectBoard,
-  createCard,
-  editCard,
-  deleteCard,
-  saveCard,
-  abortCard,
-  updateBoardSettings,
-  exportBoard,
-  BoardSettings,
-  User,
-  setUserLabel,
-} from '../redux';
+import { visitBoard, connectBoard, disconnectBoard } from '../redux';
+import BoardWrapper from '../components/BoardWrapper';
 import Layout from '../components/Layout';
-import BoardComp from '../components/BoardWrapper';
 
 interface Params {
   id: string;
 }
 
 interface Props {
-  boards: Boards;
-  cards: Cards;
-  user: User;
   dispatch: Dispatch<{}>;
+  location: Location;
   match: Match<Params>;
 }
 
-class BoardPage extends React.Component<Props, {}> {
+class BoardPage extends React.Component<Props> {
   render() {
-    const { boards, cards, user, dispatch, match } = this.props;
-    const { id } = match.params;
-    const board = boards.items[id] || { state: 'pending' };
-    const boardCards = cards[id] || {};
-
     return (
       <Layout>
-        <BoardComp
-          board={board}
-          cards={boardCards}
-          user={user}
-          createCard={categoryId => dispatch(createCard({ boardId: board.id, categoryId }))}
-          editCard={cardId =>
-            dispatch(
-              editCard({
-                boardId: board.id,
-                cardId,
-              })
-            )
-          }
-          deleteCard={cardId =>
-            dispatch(
-              deleteCard({
-                boardId: board.id,
-                cardId,
-              })
-            )
-          }
-          saveCard={(cardId, content) => dispatch(saveCard({ boardId: board.id, cardId, content }))}
-          abortCard={cardId => dispatch(abortCard({ boardId: board.id, cardId }))}
-          updateSettings={(settings: BoardSettings) => dispatch(updateBoardSettings(board.id, settings))}
-          exportBoard={(exporter: string) => dispatch(exportBoard(board.id, exporter))}
-          setUserLabel={(label: string) => dispatch(setUserLabel(board.id, label))}
-        />
+        <BoardWrapper boardId={this.getBoardId()} location={this.props.location} />
       </Layout>
     );
   }
 
-  componentWillMount() {
-    this.props.dispatch(visitBoard(this.props.match.params.id));
-    this.props.dispatch(connectBoard(this.props.match.params.id));
+  componentDidMount() {
+    this.props.dispatch(visitBoard(this.getBoardId()));
+    this.props.dispatch(connectBoard(this.getBoardId()));
   }
 
   componentWillUnmount() {
-    this.props.dispatch(disconnectBoard(this.props.match.params.id));
+    this.props.dispatch(disconnectBoard(this.getBoardId()));
+  }
+
+  private getBoardId(): string {
+    return this.props.match.params.id;
   }
 }
 
-export default connect((state: State) => ({ boards: state.boards, cards: state.cards, user: state.user }))(BoardPage);
+export default connect()(BoardPage);

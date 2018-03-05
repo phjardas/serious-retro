@@ -8,7 +8,7 @@ interface Props {
   boards: Board[];
 }
 
-export default (props: Props) => {
+export default function MyBoards(props: Props) {
   const { boards } = props;
   if (!boards.length) {
     return null;
@@ -39,4 +39,4 @@ export default (props: Props) => {
       </List>
     </div>
   );
-};
+}

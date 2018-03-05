@@ -29,7 +29,7 @@ interface State {
   categories: Category[];
 }
 
-export default class BoardSettings extends React.Component<Props, State> {
+export default class BoardSettings extends React.PureComponent<Props, State> {
   state = {
     label: this.props.board.label || '',
     categories: Object.keys(this.props.board.categories)

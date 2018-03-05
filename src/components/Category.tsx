@@ -15,7 +15,7 @@ export interface Props {
   abortCard(cardId: string): void;
 }
 
-export default (props: Props) => {
+export default function CategoryComp(props: Props) {
   const { category, cards, participants, createCard } = props;
 
   return (
@@ -45,4 +45,4 @@ export default (props: Props) => {
       </Segment>
     </React.Fragment>
   );
-};
+}

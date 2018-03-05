@@ -12,7 +12,7 @@ interface State {
   label: string;
 }
 
-export default class BoardSettings extends React.Component<Props, State> {
+export default class BoardSettings extends React.PureComponent<Props, State> {
   state = { label: this.props.participant && this.props.participant.explicitLabel ? this.props.participant.label : '' };
 
   render() {

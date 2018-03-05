@@ -11,7 +11,7 @@ export interface State {
   content: string;
 }
 
-export default class CardForm extends React.Component<Props, State> {
+export default class CardForm extends React.PureComponent<Props, State> {
   state: State = {
     content: this.props.content,
   };

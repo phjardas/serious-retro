@@ -1,13 +1,13 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, Grid, Message, Icon } from 'semantic-ui-react';
 
-import { BoardData, BoardCards, BoardParticipant, Card } from '../redux';
+import { BoardData, BoardCards, BoardParticipant, Card, State } from '../redux';
 import Category from './Category';
 
-export interface Props {
+interface OwnProps {
   board: BoardData;
-  cards: BoardCards;
   participant?: BoardParticipant;
   createCard(categoryId: string): void;
   editCard(cardId: string): void;
@@ -16,7 +16,11 @@ export interface Props {
   abortCard(cardId: string): void;
 }
 
-export default (props: Props) => {
+interface Props extends OwnProps {
+  cards: BoardCards;
+}
+
+function BoardCardsComp(props: Props) {
   const { board, cards, participant, createCard, editCard, deleteCard, saveCard, abortCard } = props;
 
   const categoryCards: (categoryId: string) => Card[] = categoryId =>
@@ -83,4 +87,15 @@ export default (props: Props) => {
       </React.Fragment>
     </Grid>
   );
-};
+}
+
+export default connect(
+  (state: State) => ({ cards: state.cards }),
+  dispatch => ({ dispatch }),
+  (stateProps, dispatchProps, ownProps: OwnProps) => ({
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    cards: stateProps.cards[ownProps.board.id] || {},
+  })
+)(BoardCardsComp);

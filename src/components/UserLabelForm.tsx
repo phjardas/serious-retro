@@ -15,7 +15,7 @@ interface State {
   label: string;
 }
 
-class UserLabelFrom extends React.Component<Props, State> {
+class UserLabelFrom extends React.PureComponent<Props, State> {
   state = { label: this.props.board.participants[this.props.userId].label || '' };
 
   render() {

@@ -15,7 +15,7 @@ export interface Props {
   dispatch: Dispatch<{}>;
 }
 
-class Layout extends React.Component<Props, {}> {
+class Layout extends React.Component<Props> {
   render() {
     const { title, boards, children } = this.props;
     const myBoards = Object.keys(boards.mine).map(id => boards.items[id]);
@@ -50,7 +50,7 @@ class Layout extends React.Component<Props, {}> {
     );
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.props.dispatch(loadMyBoards());
   }
 }
