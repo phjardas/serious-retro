@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Card, Button, Dimmer, SemanticCOLORS } from 'semantic-ui-react';
 
 import { Card as CardData, BoardParticipants } from '../redux';
@@ -30,7 +30,7 @@ export default function CardComp(props: Props) {
           <CardForm content={card.content} save={save} cancel={cancel} />
         </Card.Content>
       ) : (
-        <React.Fragment>
+        <>
           <Card.Content>
             <Card.Description>
               <p>{card.content}</p>
@@ -45,7 +45,7 @@ export default function CardComp(props: Props) {
               </div>
             </Card.Description>
           </Card.Content>
-        </React.Fragment>
+        </>
       )}
     </Dimmer.Dimmable>
   );

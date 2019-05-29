@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, Grid, Message, Icon } from 'semantic-ui-react';
@@ -34,41 +34,38 @@ function BoardCardsComp(props: Props) {
 
   return (
     <Grid padded>
-      <React.Fragment>
-        {!board.label &&
-          participant &&
-          participant.role === 'owner' && (
-            <Grid.Column mobile={16}>
-              <Message warning icon>
-                <Icon name="warning sign" />
-                <Message.Content>
-                  <Message.Header>Your retrospective has no name yet.</Message.Header>
-                  <Button
-                    as={Link}
-                    to={`/boards/${board.id}/settings`}
-                    primary
-                    content="Set a retrospective name now!"
-                    style={{ marginTop: '1rem' }}
-                  />
-                </Message.Content>
-              </Message>
-            </Grid.Column>
-          )}
+      <>
+        {!board.label && participant && participant.role === 'owner' && (
+          <Grid.Column mobile={16}>
+            <Message warning icon>
+              <Icon name="warning sign" />
+              <Message.Content>
+                <Message.Header>Your retrospective has no name yet.</Message.Header>
+                <Button
+                  as={Link}
+                  to={`/boards/${board.id}/settings`}
+                  primary
+                  content="Set a retrospective name now!"
+                  style={{ marginTop: '1rem' }}
+                />
+              </Message.Content>
+            </Message>
+          </Grid.Column>
+        )}
 
-        {participant &&
-          !participant.explicitLabel && (
-            <Grid.Column mobile={16}>
-              <Message warning icon>
-                <Icon name="warning sign" />
-                <Message.Content>
-                  <Message.Header>
-                    You are currently using the name <em>{participant.label}</em>
-                  </Message.Header>
-                  <Button as={Link} to={`/boards/${board.id}/user`} primary content="Change your name now!" style={{ marginTop: '1rem' }} />
-                </Message.Content>
-              </Message>
-            </Grid.Column>
-          )}
+        {participant && !participant.explicitLabel && (
+          <Grid.Column mobile={16}>
+            <Message warning icon>
+              <Icon name="warning sign" />
+              <Message.Content>
+                <Message.Header>
+                  You are currently using the name <em>{participant.label}</em>
+                </Message.Header>
+                <Button as={Link} to={`/boards/${board.id}/user`} primary content="Change your name now!" style={{ marginTop: '1rem' }} />
+              </Message.Content>
+            </Message>
+          </Grid.Column>
+        )}
 
         {categories.map(category => (
           <Grid.Column key={category.id} mobile={16} tablet={8} computer={4}>
@@ -84,7 +81,7 @@ function BoardCardsComp(props: Props) {
             />
           </Grid.Column>
         ))}
-      </React.Fragment>
+      </>
     </Grid>
   );
 }

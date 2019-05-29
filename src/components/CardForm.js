@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Button, Form } from 'semantic-ui-react';
 
 export interface Props {

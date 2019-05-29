@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Button, Container, Form, Header, Message, SemanticCOLORS } from 'semantic-ui-react';
 
 import { BoardData, Category } from '../redux';
@@ -21,7 +21,7 @@ const colors: SemanticCOLORS[] = [
 
 export interface Props {
   board: BoardData;
-  save(settings: { label: string; categories: { [id: string]: Category } }): void;
+  save(settings: { label: string, categories: { [id: string]: Category } }): void;
 }
 
 interface State {

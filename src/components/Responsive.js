@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Responsive, { MediaQueryProps } from 'react-responsive';
 
 const breakpoints = {

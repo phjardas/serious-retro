@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Route, Redirect } from 'react-router';
 import { Location } from 'history';
 import { NavLink } from 'react-router-dom';
@@ -55,7 +55,7 @@ export default class Board extends React.Component<Props> {
     }
 
     return (
-      <React.Fragment>
+      <>
         <Menu pointing secondary>
           {board.label && <Menu.Item header content={board.label} />}
           {tabs.map(tab => (
@@ -72,7 +72,7 @@ export default class Board extends React.Component<Props> {
         <Route path="/boards/:id/participants" component={() => <Participants board={board} user={user} />} />
         <Route path="/boards/:id/export" component={() => <BoardExport exportBoard={exportBoard} />} />
         <Route exact path="/boards/:id" component={() => <Redirect to={`/boards/${board.id}/cards`} />} />
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Button, Header, Segment } from 'semantic-ui-react';
 
 import { Category, Card, BoardParticipants } from '../redux';
@@ -19,7 +19,7 @@ export default function CategoryComp(props: Props) {
   const { category, cards, participants, createCard } = props;
 
   return (
-    <React.Fragment>
+    <>
       <Header attached="top" inverted>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           {category.label}
@@ -43,6 +43,6 @@ export default function CategoryComp(props: Props) {
           ))}
         <Button content="Add new card" icon="add" color={category.color} onClick={createCard} />
       </Segment>
-    </React.Fragment>
+    </>
   );
 }

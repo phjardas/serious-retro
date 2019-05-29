@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Container, Icon, Segment } from 'semantic-ui-react';
 
 export default function Footer() {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Button, Container, Form, Icon, Message } from 'semantic-ui-react';
 
 import { BoardParticipant } from '../redux';
@@ -22,19 +22,18 @@ export default class BoardSettings extends React.PureComponent<Props, State> {
 
     return (
       <Container>
-        <React.Fragment>
-          {participant &&
-            !participant.explicitLabel && (
-              <Message warning icon>
-                <Icon name="warning sign" />
-                <Message.Content>
-                  <Message.Header>
-                    You are currently using the name <em>{participant.label}</em>
-                  </Message.Header>
-                  <p>Change your name now!</p>
-                </Message.Content>
-              </Message>
-            )}
+        <>
+          {participant && !participant.explicitLabel && (
+            <Message warning icon>
+              <Icon name="warning sign" />
+              <Message.Content>
+                <Message.Header>
+                  You are currently using the name <em>{participant.label}</em>
+                </Message.Header>
+                <p>Change your name now!</p>
+              </Message.Content>
+            </Message>
+          )}
 
           <Form onSubmit={submit}>
             <Form.Input
@@ -51,7 +50,7 @@ export default class BoardSettings extends React.PureComponent<Props, State> {
             </p>
             <Button primary content="Save" icon="save" />
           </Form>
-        </React.Fragment>
+        </>
       </Container>
     );
   }

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Header, List } from 'semantic-ui-react';
 
@@ -22,14 +22,14 @@ export default function MyBoards(props: Props) {
           <List.Item key={board.id} as={Link} to={`/boards/${board.id}`}>
             <List.Content>
               {board.state === 'present' ? (
-                <React.Fragment>
+                <>
                   <List.Header>{board.label || board.id}</List.Header>
                   <List.Description>
                     {board.role === 'owner'
                       ? `You created this retrospective on ${board.createdAt.toLocaleDateString()}`
                       : 'You participated'}
                   </List.Description>
-                </React.Fragment>
+                </>
               ) : (
                 <List.Description>loading&hellip;</List.Description>
               )}
